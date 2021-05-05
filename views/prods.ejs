@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>All Products</title>
+    <link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet">
+</head>
+
+<body>
+<div class="backdrop"></div>
+<header class="main-header">
+    <button id="side-menu-toggle">Menu</button>
+    <nav class="main-header__nav">
+        <ul class="main-header__item-list">
+
+            <li class="main-header__item">
+                <a class="active" href="/prods">Products</a>
+            </li>
+            <li class="main-header__item">
+                <a class="" href="/cart">Cart</a>
+            </li>
+            <li class="main-header__item">
+                <a class="" href="/orders">Orders</a>
+            </li>
+            <li class="main-header__item">
+                <a class="" href="/admin/add-product">Add Product
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+</header>
+
+<nav class="mobile-nav">
+    <ul class="mobile-nav__item-list">
+        <li class="mobile-nav__item">
+            <a class="" href="/">Shop</a>
+        </li>
+        <li class="mobile-nav__item">
+            <a class="active" href="/prods">Products</a>
+        </li>
+        <li class="mobile-nav__item">
+            <a class="" href="/cart">Cart</a>
+        </li>
+        <li class="mobile-nav__item">
+            <a class="" href="/orders">Orders</a>
+        </li>
+        <li class="mobile-nav__item">
+            <a class="" href="/admin/add-product">Add Product
+            </a>
+        </li>
+        <li class="mobile-nav__item">
+            <a class="" href="/admin/prods">Admin Products
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<main>
+    
+        <div class="grid">
+            <% for(var i=0; i<articles.length; i++){ %>
+                <article class="card product-item">
+                    <header class="card__header">
+                        <h1 class="product__title">
+                            <%= articles[i].title %>
+                        </h1>
+                    </header>
+                    <div class="card__image">
+                        <img src=<%= articles[i].image %>>
+                    </div>
+                    <div class="card__content">
+                        <h3 class="product__price">Price:
+                            <%= articles[i].price %>
+                        </h3>
+                        <h3 class="product__description">Quantity:
+                            <%= articles[i].quantity %>
+                        </h3>
+                    </div>
+                    <div class="card__actions">
+
+                        <form action="/cart" method="post">
+    <button class="btn" type="submit">Add to Cart</button>
+    <input type="hidden" name="product_id" value=<%=articles[i].id %>>
+</form>
+                    </div>
+                </article>
+
+            <% } %>
+            
+              
+        </div>
+    
+</main>
+<script src="/js/main.js"></script>
+</body>
+
+</html>
