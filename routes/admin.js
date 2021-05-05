@@ -6,8 +6,8 @@ const adminCon = require('../controllers/admin');
 const router = express.Router();
 
 
-router.get('/add-product',adminCon.get_test);
-router.post('/add-product',adminCon.post_test);
+router.get('/home',adminCon.get_home_page);
+//router.post('/home',adminCon.post_test);
 
 /*router.get('/prods',adminCon.get_prods_test);
 router.post('/prods',adminCon.post_prods_test);

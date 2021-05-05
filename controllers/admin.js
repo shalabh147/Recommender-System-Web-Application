@@ -1,7 +1,7 @@
-const Prod = require('../models/prod');
+//const Prod = require('../models/prod');
 const pool = require('../utils/database');
 
-
+/*
 exports.get_test = (req,res,next) => {
 
 
@@ -92,6 +92,7 @@ exports.get_search_page = (req,res,next) => {
 
     //a.then(value => {res.render('prods', {pageTitle: 'Products', path: '/prods', editing: false, articles:value.rows});});
 };
+*/
 
 exports.get_home_page = (req,res,next) => {
 
@@ -116,9 +117,9 @@ exports.get_home_page = (req,res,next) => {
     .then(val3 => {list3 = val3.rows; return pool.query("select * from Movies l, Users u, Friends f where (f.Username1 = $1 and f.Username2 = u.Username and u.last_watched = l.MovieId) or (f.Username2 = $1 and f.Username1 = u.Username and u.last_watched = l.MovieId) ;", [username])})
     .then(val4 => {list4 = val4.rows;
 
-        res.render('admin/search', {
-            pageTitle: 'Search',
-            path: '/admin/search',
+        res.render('admin/home', {
+            pageTitle: 'Home',
+            path: '/admin/home',
             editing: false,
             user_name:username,
             list1:list1,
@@ -134,6 +135,7 @@ exports.get_home_page = (req,res,next) => {
     //a.then(value => {res.render('prods', {pageTitle: 'Products', path: '/prods', editing: false, articles:value.rows});});
 }
 
+/*
 exports.get_ratings_page = (req,res,next) => {
 
     const username = req.body.username;
@@ -313,30 +315,7 @@ exports.post_cart_test = (req,res,next) => {
     //const product = new Prod( title, image, price,quantity);
     const product_id = req.body.product_id;
 
-    /*
-    console.log("hello");
-    var pres_in_product = Prod.get_with_prod_id(product_id);
-    if (pres_in_product != 0){
-        //var pres_in_cart = Prod.get_in_cart_id(product_id);
-        //console.log(pres_in_cart);
-        if (Prod.get_in_cart_id(product_id) != 0)
-        {console.log("nice");
-            Prod.update_in_cart(product_id);
-            Prod.update_in_prod(product_id);
-        }
-        else
-        {
-            
-            Prod.insert_in_cart(product_id);
-            Prod.update_in_prod(product_id);
-        }
 
-        res.redirect('/cart');
-    } else
-    {
-        res.redirect('/prods');
-    }
-*/
     const nice = Prod.get_with_prod_id(product_id);
     nice.then(val => {if(val.rowCount != 0) 
         {return Prod.get_in_cart_id(product_id).then(value => {Prod.update_in_prod(product_id); if(value.rowCount != 0) {return Prod.update_in_cart(product_id)} else return Prod.insert_in_cart(product_id)})
@@ -387,13 +366,7 @@ exports.post_orders_test = (req,res,next) => {
     var res_list = [];
     var id_list = [];
     var newlist = [];
-/*
-    cred.then(val => { x = val.rows[0].credit; return Prod.sum_price_cart()})
-        .then(value => {if(x < value.rows[0].sum) {res.redirect('/cart')} else {pur = value.rows[0].sum; return Prod.buy_all()} })
-        .then(v => {return Prod.empty_cart()})
-        .then(yo => {return Prod.update_credit(pur)})
-        .then(ve => {res.redirect('/orders')});
-*/
+
     cred.then(val => { x = val.rows[0].credit; return Prod.sum_price_cart()})
         .then(value => {if(x < value.rows[0].sum) {return res.redirect('/cart') } 
         else {pur = value.rows[0].sum; return Prod.get_full_cart().then(ui => {y = ui.rowCount;
@@ -431,5 +404,5 @@ exports.post_orders_test = (req,res,next) => {
           
            
 };
-
+*/
 
