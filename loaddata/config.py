@@ -1,5 +1,5 @@
 dbname = 'project'
 host = '127.0.0.1'
-port = '5433'
+port = '5432'
 user = 'postgres'
-pwd = 'shalabh12'
+pwd = '1234'

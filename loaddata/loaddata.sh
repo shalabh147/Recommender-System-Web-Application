@@ -1,4 +1,3 @@
-
 python3 -m pip install -r requirements.txt
 wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1qV12J4AYE6VYNTd-YoO7aik55QFlWJKJ' -O facebook.csv
 wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=15WXP3LabvlpA3Q93NoahPeSTRIgtoDHi' -O ratings_small.csv
