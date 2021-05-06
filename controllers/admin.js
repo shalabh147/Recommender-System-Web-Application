@@ -28,6 +28,7 @@ exports.get_login_page = (req,res,next) => {
 
 exports.post_login_page = (req,res,next) => {
 
+    console.log("baba\n");
     const username = req.body.username;
     const passwd = req.body.password;
 

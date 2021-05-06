@@ -10,40 +10,18 @@
       <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Sign In</label>
       <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Sign Up</label>
       <div class="login-form">
-        <div class="sign-in-htm" action="/admin/login" method="post_login_page">
+        <div class="sign-in-htm" action="http://localhost:3000/admin/login" method="post_login_page">
           <div class="group">
-            <label for="user" class="label">Username</label>
-            <input id="username" name="username" type="text" class="input" value="<% { %><%= username %><% } %>">
+            <label for="username" class="label">Username</label>
+            <input id="username" name="username" type="text" class="input" >
           </div>
           <div class="group">
-            <label for="pass" class="label">Password</label>
-            <input id="password" name="password" type="password" class="input" data-type="password" value="<% { %><%= password %><% } %>">
+            <label for="password" class="label">Password</label>
+            <input id="password" name="password" type="password" class="input" data-type="password" >
           </div>
-          <div class="group">
-            <input type="submit" class="button" value="Sign In">
-          </div>
+          <button class="btn" type="submit">sign-in</button>
         </div>
-        <!-- <div class="sign-up-htm" action="/admin/login" method="get_language_pref">
-          <div class="group">
-            <label for="user" class="label">Username</label>
-            <input id="user" type="text" class="input" value="<% { %><%= user.Username %><% } %>">
-          </div>
-          <div class="group">
-            <label for="pass" class="label">Email Address</label>
-            <input id="pass" type="text" class="input" value="<% { %><%= user.emailID %><% } %>">
-          </div>
-          <div class="group">
-            <label for="pass" class="label">Password</label>
-            <input id="pass" type="password" class="input" data-type="password" value="<% { %><%= user.password %><% } %>">
-          </div>
-          <div class="group">
-            <label for="pass" class="label">Repeat Password</label>
-            <input id="pass" type="password" class="input" data-type="password" value="<% { %><%= crossCheck %><% } %>">
-          </div>
-          <div class="group">
-            <input type="submit" class="button" value="Sign Up">
-          </div>
-        </div> -->
+        
       </div>
     </div>
   </div>
