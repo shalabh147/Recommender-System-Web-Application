@@ -1,5 +1,5 @@
 import pandas as pd
-import csv
+import csv, config
 
 def filter_genre(s):
     bad_chars = ["[", "]", "{", "}", ",", ":"]
@@ -81,7 +81,8 @@ with open('ratings_small.csv', 'r') as file:
         lines_final = []
         for i in range(1,len(lines)):
             if lines[i][1] in ids:
-                lines_final.append([lines[i][1], "user"+str(lines[i][0]), lines[i][2], ''])
+                if int(lines[i][0]) <= config.num_users:
+                    lines_final.append([lines[i][1], "user"+str(lines[i][0]), lines[i][2], ''])
         csvwriter.writerows(lines_final)
 
 

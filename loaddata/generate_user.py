@@ -1,12 +1,11 @@
-import pandas as pd
-import csv
+import csv, config
 
 with open('user.csv', 'w') as wfile:
     print("Creating user.csv")
     header = ['username', 'name', 'password', 'email_id', 'last_watched', 'login', 'language_pref1', 'language_pref2', 'admin']
     csvwriter = csv.writer(wfile)
     csvwriter.writerow(header)
-    for i in range(1, 672):
+    for i in range(1, config.num_users+1):
         csvwriter.writerow(['user'+str(i), 'user'+str(i), 'user'+str(i), 'user'+str(i)+'@foo.com', '', 'false', '', '', 'false'])
 
 with open('facebook.csv', 'r') as file:
@@ -19,5 +18,5 @@ with open('facebook.csv', 'r') as file:
         for i in range(len(lines)):
             u1 = 1+int(lines[i][0])
             u2 = 1+int(lines[i][1])
-            if u1 < 672 and u2 < 672:
+            if u1 <= config.num_users and u2 <= config.num_users:
                 csvwriter.writerow(["user"+str(u1), "user"+str(u2)])
