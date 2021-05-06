@@ -10,7 +10,7 @@
       <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Sign In</label>
       <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Sign Up</label>
       <div class="login-form">
-        <div class="sign-in-htm" action="http://localhost:3000/admin/login" method="post_login_page">
+        <form class="sign-in-htm" action="http://localhost:3000/admin/login" method="POST">
           <div class="group">
             <label for="username" class="label">Username</label>
             <input id="username" name="username" type="text" class="input" >
@@ -20,7 +20,7 @@
             <input id="password" name="password" type="password" class="input" data-type="password" >
           </div>
           <button class="btn" type="submit">sign-in</button>
-        </div>
+        </form>
         
       </div>
     </div>

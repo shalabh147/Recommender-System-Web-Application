@@ -30,7 +30,7 @@ exports.post_login_page = (req,res,next) => {
 
     console.log("baba\n");
     const username = req.body.username;
-    const passwd = req.body.password;
+    const password = req.body.password;
 
     const a = pool.query("select count(*) from Users where username = $1 and password = $2 and login = 0 ;" , [username,password])
     a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
