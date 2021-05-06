@@ -6,7 +6,8 @@ def create_db():
     conn = psycopg2.connect(host = config.host, database = config.user, user = config.user, password = config.pwd, port = config.port)
     conn.autocommit = True
     cursor = conn.cursor()
-    cursor.execute("CREATE database "+config.dbname+";")
+    cursor.execute("DROP DATABASE IF EXISTS "+config.dbname+";")
+    cursor.execute("CREATE DATABASE "+config.dbname+";")
     conn.close()
 
 def connect():

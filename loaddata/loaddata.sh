@@ -7,7 +7,7 @@ wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download
 
 python3 generate_movie.py
 python3 generate_user.py
-echo "\n"
+echo 
 python3 tables.py
 
 rm *.csv

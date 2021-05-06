@@ -75,7 +75,7 @@ with open('ratings_small.csv', 'r') as file:
     lines = list(csvFile)
     header = ['MovieId', 'Username', 'Num_Rating', 'Verbal_Rating']
     with open('rating.csv', 'w') as wfile:
-        print("Creating genres.csv")
+        print("Creating rating.csv")
         csvwriter = csv.writer(wfile)
         csvwriter.writerow(header)
         lines_final = []
