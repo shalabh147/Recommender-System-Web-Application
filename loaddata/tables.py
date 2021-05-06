@@ -2,6 +2,13 @@ import psycopg2, sys, config, create_tables
 import pandas as pd
 import time
 
+def create_db():
+    conn = psycopg2.connect(host = config.host, database = config.user, user = config.user, password = config.pwd, port = config.port)
+    conn.autocommit = True
+    cursor = conn.cursor()
+    cursor.execute("CREATE database "+config.dbname+";")
+    conn.close()
+
 def connect():
     conn = psycopg2.connect(host = config.host, database = config.dbname, user = config.user, password = config.pwd, port = config.port)
     return conn
@@ -27,6 +34,9 @@ def pg_load_table(file_path, table_name):
     except Exception as e:
         print("Error: {}".format(str(e)))
         sys.exit(1)
+
+print("Creating database {}".format(config.dbname))
+create_db()
 
 file_path = 'movie'
 table_name = 'Movies'
