@@ -126,11 +126,14 @@ exports.get_search_page = (req,res,next) => {
 
     var username = req.session.name_;
     var list1;
+    var list2;
     try{
-        list1 = req.session.search_query.rows
+        list1 = req.session.search_query1.rows
+        list2 = req.session.search_query2.rows
     }
     catch(e){
         list1 = []
+        list2 = []
     }
     const str1 = '1';
     const a = pool.query("SELECT login from Users where username = $1 and login = $2;",[username,str1]);
@@ -141,7 +144,8 @@ exports.get_search_page = (req,res,next) => {
         path: '/admin/search',
         editing: false,
         user_name:username,
-        list1:list1
+        list1:list1,
+        list2:list2
     }) });
     
 
@@ -161,8 +165,10 @@ exports.post_search_page = async (req,res,next) => {
             res.redirect('/admin/login');
         }
         else{
-            const b = await pool.query("with mov as (select * from Movies where lower(title) like '%' || $1 || '%') , act_mov as (select m.MovieId, m.language, m.title, m.releaseDate, m.popularity, m.duration, m.avgRating from movies m, Movie_Actor m_a, actor a where a.Id = m_a.ActorId and m.MovieId = m_a.MovieId and lower(a.Name) like '%' || $1 || '%') select * from mov union select * from act_mov order by popularity desc limit 10;" , [keyword]);
-            req.session.search_query = b;
+            const b = await pool.query("with act_mov as (select m.MovieId, m.language, m.title, m.releaseDate, m.popularity, m.duration, m.avgRating from movies m, Movie_Actor m_a, actor a where a.Id = m_a.ActorId and m.MovieId = m_a.MovieId and lower(a.Name) like '%' || $1 || '%') select * from act_mov order by popularity desc limit 10;" , [keyword]);
+            const c = await pool.query("with mov as (select * from Movies where lower(title) like '%' || $1 || '%') select * from mov order by popularity desc limit 10;" , [keyword]);
+            req.session.search_query1 = c;
+            req.session.search_query2 = b;
             res.redirect('/admin/search');
         }
     }
