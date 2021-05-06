@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="/css/home.css">
+</head>
+<body>
+	<div class = "parallax">
+
+	
+	<nav class="page__menu page__custom-settings menu">
+	<ul class="menu__list r-list">
+		<form class="nav-bar" action="http://localhost:3000/admin/home" method="GET"><li class="menu__group"><button class="menu__link r-link text-underlined">Home</button></li></form>
+		<form class="nav-bar" action="http://localhost:3000/admin/search" method="GET"><li class="menu__group"><button class="menu__link r-link text-underlined">Search</button></li></form>
+		<form class="nav-bar" action="http://localhost:3000/admin/login" method="POST"><li class="menu__group"><button class="menu__link r-link text-underlined">My profile</button></li></form>
+		<form class="nav-bar" action="http://localhost:3000/admin/login" method="POST"><li class="menu__group"><button class="menu__link r-link text-underlined">Admin</button></li></form>
+		<form class="nav-bar" action="http://localhost:3000/admin/login" method="POST"><li class="menu__group"><button class="menu__link r-link text-underlined">Logout</button></li></form>
+	</ul>
+	</nav>
+
+	<form class="nav-bar" action="http://localhost:3000/admin/search" method="POST">
+		<div class="search-container" href=#home>
+			<div class="group">
+				<label for="search" class="label"></label>
+				<input id="search" name="search" placeholder="search..." type="text" class="input" >
+			</div>
+		  	<i class="fa fa-search"></i>
+		</div>
+	</form>
+
+<table style="width:100%">
+	<tr>
+		<% for(var i=0; i<list1.length; i++){ %> 
+		<th>
+			<div class="movie-card">
+				<div class="face face1">
+					<div class="content">
+						<!-- <img src="https://github.com/Jhonierpc/WebDevelopment/blob/master/CSS%20Card%20Hover%20Effects/img/design_128.png?raw=true"> -->
+						<h3><%= list1[i].title %></h3>
+						<h4><%= list1[i].releaseDate %></h4>
+						<h4><%= list1[i].language %></h4>                  
+					</div>
+				</div>
+				<div class="face face2">
+					<div class="content">
+							 <!-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cum cumque minus iste veritatis provident at.</p> -->
+								<a href="#">More Info</a>
+								<a href="#">Watch Now</a>
+								<a href="#">Give Rating</a>
+					</div>
+				</div>
+			</div>
+		</th>
+		<% } %>
+	</tr>
+</table>
+</div>
+</body>

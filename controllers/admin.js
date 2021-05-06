@@ -36,7 +36,7 @@ exports.post_login_page = async (req,res,next) => {
         const a = await pool.query("select * from Users where username = $1 and password = $2 and login = $3;" , [username,password,str1])
         req.session.name_ = username;
         if (a.rowCount == 0){
-            console.log("chaman chosda");
+            console.log("user not found: "+username);
             res.redirect('/admin/login');
         }
         else{
@@ -120,28 +120,63 @@ exports.get_genre_pref = (req,res,next) => {
 
 };
 
+*/
+
 exports.get_search_page = (req,res,next) => {
 
-    const username = req.body.username;
-    const a = pool.query("SELECT login from USERS where Username = $1 and login = 1;",[username]);
+    var username = req.session.name_;
+    var list1;
+    try{
+        list1 = req.session.search_query.rows
+    }
+    catch(e){
+        list1 = []
+    }
+    const str1 = '1';
+    const a = pool.query("SELECT login from Users where username = $1 and login = $2;",[username,str1]);
     //const a = Prod.get_all();
     a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
-    else res.render('admin/home', {
-        pageTitle: 'Home',
-        path: '/admin/home',
+    else res.render('admin/search', {
+        pageTitle: 'Search',
+        path: '/admin/search',
         editing: false,
-        user_name:username
+        user_name:username,
+        list1:list1
     }) });
     
 
     //a.then(value => {res.render('prods', {pageTitle: 'Products', path: '/prods', editing: false, articles:value.rows});});
 };
-*/
+
+exports.post_search_page = async (req,res,next) => {
+
+    try{
+        const username = req.session.name_;
+        var keyword = req.body.search;
+        const str1 = '0';
+        const str2 = '1';
+        const a = await pool.query("SELECT login from Users where username = $1 and login = $2;", [username,str2]);
+        if (a.rowCount == 0){
+            console.log(username+" not logged in");
+            res.redirect('/admin/login');
+        }
+        else{
+            const b = await pool.query("with mov as (select * from Movies where lower(title) like '%' || $1 || '%') , act_mov as (select m.MovieId, m.language, m.title, m.releaseDate, m.popularity, m.duration, m.avgRating from movies m, Movie_Actor m_a, actor a where a.Id = m_a.ActorId and m.MovieId = m_a.MovieId and lower(a.Name) like '%' || $1 || '%') select * from mov union select * from act_mov order by popularity desc limit 10;" , [keyword]);
+            req.session.search_query = b;
+            res.redirect('/admin/search');
+        }
+    }
+    catch (e){
+        console.log(e);
+        res.status(400).redirect('/admin/login')
+    }
+
+};
 
 exports.get_home_page = (req,res,next) => {
 
     var username = req.session.name_;
-    console.log(username);
+    // console.log(username);
     // const username = "user1";
     const str1 = '1';
     const a = pool.query("SELECT login from Users where username = $1 and login = $2;",[username,str1]);
@@ -159,7 +194,7 @@ exports.get_home_page = (req,res,next) => {
     .then(val2 => {list2 = val2.rows; return pool.query("select * from Movie_Genre m_g, user_Genre u_g, Movies m where m.MovieId = m_g.MovieId and m_g.GenreId = u_g.GenreId and u_g.username = $1 order by m.avgRating desc LIMIT 10 ; ", [username])})
     .then(val3 => {list3 = val3.rows; return pool.query("select * from Movies l, Users u, Friends f where (f.username1 = $1 and f.username2 = u.username and u.last_watched = l.MovieId) or (f.username2 = $1 and f.username1 = u.username and u.last_watched = l.MovieId) ;", [username])})
     .then(val4 => {list4 = val4.rows;
-        console.log(list3.length)
+        
         res.render('admin/home', {
             pageTitle: 'Home',
             path: '/admin/home',
