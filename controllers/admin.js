@@ -96,8 +96,9 @@ exports.get_search_page = (req,res,next) => {
 
 exports.get_home_page = (req,res,next) => {
 
-    const username = req.body.username;
-    const a = pool.query("SELECT login from USERS where Username = $1 and login = 1;",[username]);
+    // const username = req.body.username;
+    const username = "user1";
+    const a = pool.query("SELECT login from Users where username = $1;",[username]);
     //const a = Prod.get_all();
     var list1;
     var list2;
@@ -108,14 +109,20 @@ exports.get_home_page = (req,res,next) => {
 
     a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
     else {
-        return pool.query("select * from Movies order by Avg_Rating DESC LIMIT 10;");
+        return pool.query("select * from Movies order by avgRating DESC LIMIT 10;");
     }})
-    .then(val1 => {list1 = val1.rows; return pool.query("select * from Movies l, (select m.MovieId, (select count(*) from Users where last_watched = m.MovieId) as count from Movies m) as foo where l.MovieId = foo.MovieId order by foo.count DESC LIMIT 10 ; ")
+    .then(val1 => {list1 = val1.rows; return pool.query("select * from Movies order by avgRating DESC LIMIT 10;")
     })
-    .then(val2 => {list2 = val2.rows; return pool.query("select * from Movie_Genre m_g, User_Genre u_g, Movies m where m.MovieId = m_g.MovieId and m_g.GenreId = u_g.GenreId and u_g.Username = $1 order by m.Avg_Rating desc LIMIT 10 ; ", [username])
+    .then(val2 => {list2 = val2.rows; return pool.query("select * from Movies order by avgRating DESC LIMIT 10;")
     })
-    .then(val3 => {list3 = val3.rows; return pool.query("select * from Movies l, Users u, Friends f where (f.Username1 = $1 and f.Username2 = u.Username and u.last_watched = l.MovieId) or (f.Username2 = $1 and f.Username1 = u.Username and u.last_watched = l.MovieId) ;", [username])})
+    .then(val3 => {list3 = val3.rows; return pool.query("select * from Movies order by avgRating DESC LIMIT 10;")
+    })
     .then(val4 => {list4 = val4.rows;
+    
+    // .then(val2 => {list2 = val2.rows; return pool.query("select * from Movie_Genre m_g, User_Genre u_g, Movies m where m.MovieId = m_g.MovieId and m_g.GenreId = u_g.GenreId and u_g.Username = $1 order by m.Avg_Rating desc LIMIT 10 ; ", [username])
+    // })
+    // .then(val3 => {list3 = val3.rows; return pool.query("select * from Movies l, Users u, Friends f where (f.Username1 = $1 and f.Username2 = u.Username and u.last_watched = l.MovieId) or (f.Username2 = $1 and f.Username1 = u.Username and u.last_watched = l.MovieId) ;", [username])})
+    // .then(val4 => {list4 = val4.rows;
 
         res.render('admin/home', {
             pageTitle: 'Home',
