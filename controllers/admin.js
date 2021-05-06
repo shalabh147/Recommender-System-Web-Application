@@ -13,7 +13,7 @@ exports.get_test = (req,res,next) => {
 
 
 };
-
+*/
 exports.get_login_page = (req,res,next) => {
 
 
@@ -26,6 +26,23 @@ exports.get_login_page = (req,res,next) => {
 
 };
 
+exports.post_login_page = (req,res,next) => {
+
+    const username = req.body.username;
+    const passwd = req.body.password;
+
+    const a = pool.query("select count(*) from Users where username = $1 and password = $2 and login = 0 ;" , [username,password])
+    a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
+    else
+    {
+        return pool.query("update Users set login = 1 where username = $1",[username]);
+    }})
+    .then(()=> {req.session.context = username; res.redirect('/admin/home')});
+    
+
+
+};
+/*
 exports.get_signup_page = (req,res,next) => {
 
 
@@ -96,7 +113,7 @@ exports.get_search_page = (req,res,next) => {
 
 exports.get_home_page = (req,res,next) => {
 
-    const username = req.body.username;
+    const username = req.session.context;
     // const username = "user1";
     const a = pool.query("SELECT login from Users where username = $1 and login = true;",[username]);
     //const a = Prod.get_all();
