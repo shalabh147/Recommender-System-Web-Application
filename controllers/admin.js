@@ -33,7 +33,7 @@ exports.post_login_page = async (req,res,next) => {
         const password = req.body.password;
         const str1 = '0';
         const str2 = '1';
-        const a = await pool.query("select * from Users where username = $1 and password = $2 and login = $3;" , [username,password,str1])
+        const a = await pool.query("select * from Users where username = $1 and password = $2;" , [username,password])
         req.session.name_ = username;
         if (a.rowCount == 0){
             console.log("user not found: "+username);
@@ -156,7 +156,7 @@ exports.post_search_page = async (req,res,next) => {
 
     try{
         const username = req.session.name_;
-        var keyword = req.body.search;
+        var keyword = req.body.search.toLowerCase();
         const str1 = '0';
         const str2 = '1';
         const a = await pool.query("SELECT login from Users where username = $1 and login = $2;", [username,str2]);
@@ -268,29 +268,92 @@ exports.get_movies_page = (req,res,next) => {
 
     //a.then(value => {res.render('prods', {pageTitle: 'Products', path: '/prods', editing: false, articles:value.rows});});
 }
-
+*/
 exports.get_profile_page = (req,res,next) => {
 
-    const username = req.body.username;
-
-    const a = pool.query("SELECT * from USERS where Username = $1 and login = 1;",[username]);
-
+    var username = req.session.name_;
+    var list1;
+    var list2;
+    var list;
+    try{
+        list = req.session.personal_info.rows
+        // list1 = req.session.my_friends.rows
+        // list2 = req.session.search_friend.rows
+    }
+    catch(e){
+        // list1 = []
+        // list2 = []
+        list = []
+    }
+    try{
+        // list = req.session.personal_info.rows
+        // list1 = req.session.my_friends.rows
+        list2 = req.session.search_friend.rows
+    }
+    catch(e){
+        // list1 = []
+        list2 = []
+        // list = []
+    }
+    try{
+        // list = req.session.personal_info.rows
+        list1 = req.session.my_friends.rows
+        // list2 = req.session.search_friend.rows
+    }
+    catch(e){
+        list1 = []
+        // list2 = []
+        // list = []
+    }
+    const str1 = '1';
+    const a = pool.query("SELECT login from Users where username = $1 and login = $2;",[username,str1]);
+    //const a = Prod.get_all();
     a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
     else res.render('admin/profile', {
         pageTitle: 'My Profile',
         path: '/admin/profile',
         editing: false,
         user_name:username,
-        user:val.rows
-    });
-    });
+        list1:list1,
+        list2:list2,
+        list:list
+    }) });
     
 
 
     //a.then(value => {res.render('prods', {pageTitle: 'Products', path: '/prods', editing: false, articles:value.rows});});
 }
 
+exports.post_profile_page = async (req,res,next) => {
 
+    try{
+        const username = req.session.name_;
+        var keyword = req.body.search.toLowerCase();
+        const str1 = '0';
+        const str2 = '1';
+        const a = await pool.query("SELECT login from Users where username = $1 and login = $2;", [username,str2]);
+        if (a.rowCount == 0){
+            console.log(username+" not logged in");
+            res.redirect('/admin/login');
+        }
+        else{
+            const b = await pool.query("select * from Movies l, Users u, Friends f where (f.Username1 = $1 and f.Username2 = u.Username and u.last_watched = l.MovieId) or (f.Username2 = $1 and f.Username1 = u.Username and u.last_watched = l.MovieId) ; " , [username]);
+            const c = await pool.query("select * from users where username = $1" , [username]);
+            const d = await pool.query("select * from users where lower(username) like '%' || $1 || '%' " , [keyword]);
+            req.session.my_friends = b;
+            req.session.personal_info = c;
+            req.session.search_friend = d;
+            res.redirect('/admin/search');
+        }
+    }
+    catch (e){
+        console.log(e);
+        res.status(400).redirect('/admin/login')
+    }
+
+};
+
+/*
 exports.get_admin_page = (req,res,next) => {
 
     const username = req.body.username;
