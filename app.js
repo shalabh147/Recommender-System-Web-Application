@@ -14,7 +14,10 @@ app.set('views', 'views');
 app.use(bodyParser.urlencoded({ extended:true}));
 app.use(express.static(path.join(__dirname,'public')));
 var cookieParser = require('cookie-parser');
-app.use(cookieParser(config.cookieSecret))
+// app.use(cookieParser())
+
+const session = require('express-session');
+app.use(session({secret: 'nah im good'}));
 
 app.use('/admin',adminRo);
 app.use('/',nonadminRo);

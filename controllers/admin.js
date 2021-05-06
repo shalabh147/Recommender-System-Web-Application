@@ -26,22 +26,28 @@ exports.get_login_page = (req,res,next) => {
 
 };
 
-exports.post_login_page = (req,res,next) => {
+exports.post_login_page = async (req,res,next) => {
 
-    console.log("baba\n");
-    const username = req.body.username;
-    const password = req.body.password;
-    const str1 = '0';
-    const str2 = '1';
-    const a = pool.query("select * from Users where username = $1 and password = $2 and login = $3 ;" , [username,password,str1])
-    a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
-    else
-    {
-        return pool.query("update Users set login = $2 where username = $1",[username,str2]);
-    }})
-    .then(()=> {res.cookie('cookiename',username); res.redirect('/admin/home')});
-    
-
+    try{
+        const username = req.body.username;
+        const password = req.body.password;
+        const str1 = '0';
+        const str2 = '1';
+        const a = await pool.query("select * from Users where username = $1 and password = $2 and login = $3;" , [username,password,str1])
+        req.session.name_ = username;
+        if (a.rowCount == 0){
+            console.log("chaman chosda");
+            res.redirect('/admin/login');
+        }
+        else{
+            const b = await pool.query("update Users set login = $2 where username = $1",[username,str2]);
+            res.redirect('/admin/home');
+        }
+    }
+    catch (e){
+        console.log(e);
+        res.status(400).redirect('/admin/login')
+    }
 
 };
 /*
@@ -134,7 +140,7 @@ exports.get_search_page = (req,res,next) => {
 
 exports.get_home_page = (req,res,next) => {
 
-    var username = req.cookies.cookiename;
+    var username = req.session.name_;
     console.log(username);
     // const username = "user1";
     const str1 = '1';
@@ -153,7 +159,7 @@ exports.get_home_page = (req,res,next) => {
     .then(val2 => {list2 = val2.rows; return pool.query("select * from Movie_Genre m_g, user_Genre u_g, Movies m where m.MovieId = m_g.MovieId and m_g.GenreId = u_g.GenreId and u_g.username = $1 order by m.avgRating desc LIMIT 10 ; ", [username])})
     .then(val3 => {list3 = val3.rows; return pool.query("select * from Movies l, Users u, Friends f where (f.username1 = $1 and f.username2 = u.username and u.last_watched = l.MovieId) or (f.username2 = $1 and f.username1 = u.username and u.last_watched = l.MovieId) ;", [username])})
     .then(val4 => {list4 = val4.rows;
-
+        console.log(list3.length)
         res.render('admin/home', {
             pageTitle: 'Home',
             path: '/admin/home',
