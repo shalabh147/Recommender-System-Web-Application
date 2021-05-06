@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" href="profile.css">
+  <link rel="stylesheet" href="/css/profile.css">
 </head>
 <body>
 <div class = "parallax">
@@ -9,7 +9,7 @@
 	<ul class="menu__list r-list">
 		<form class="nav-bar" action="http://localhost:3000/admin/home" method="GET"><li class="menu__group"><button class="menu__link r-link text-underlined">Home</button></li></form>
 		<form class="nav-bar" action="http://localhost:3000/admin/search" method="GET"><li class="menu__group"><button class="menu__link r-link text-underlined">Search</button></li></form>
-		<form class="nav-bar" action="http://localhost:3000/admin/profile" method="POST"><li class="menu__group"><button class="menu__link r-link text-underlined">My profile</button></li></form>
+		<form class="nav-bar" action="http://localhost:3000/admin/profile" method="GET"><li class="menu__group"><button class="menu__link r-link text-underlined">My profile</button></li></form>
 		<form class="nav-bar" action="http://localhost:3000/admin/login" method="POST"><li class="menu__group"><button class="menu__link r-link text-underlined">Admin</button></li></form>
 		<form class="nav-bar" action="http://localhost:3000/admin/login" method="POST"><li class="menu__group"><button class="menu__link r-link text-underlined">Logout</button></li></form>
 	</ul>
@@ -88,7 +88,7 @@
 			<div class="face face2">
 				<div class="content">
 						<h2>list1[i].last_watched</h2>
-						<h2><% if(list1[i].login) %> online <% else %> offline</h2>
+						<h2><% if(list2[i].login) { %> online <% } else { %> offline<% } %></h2>
 						<a href="#">Remove Friend</a>
 				</div>
 			</div>
@@ -122,7 +122,7 @@
 				<div class="face face2">
 					<div class="content">
 							<h2>list2[i].last_watched</h2>
-							<h2><% if(list2[i].login) %> online <% else %> offline</h2>
+							<h2><% if(list2[i].login) { %> online <% } else { %> offline<% } %></h2>
 							<a href="#">Remove Friend</a>
 					</div>
 				</div>
