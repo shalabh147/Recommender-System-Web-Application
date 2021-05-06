@@ -31,14 +31,15 @@ exports.post_login_page = (req,res,next) => {
     console.log("baba\n");
     const username = req.body.username;
     const password = req.body.password;
-
-    const a = pool.query("select count(*) from Users where username = $1 and password = $2 and login = 0 ;" , [username,password])
+    const str1 = '0';
+    const str2 = '1';
+    const a = pool.query("select * from Users where username = $1 and password = $2 and login = $3 ;" , [username,password,str1])
     a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
     else
     {
-        return pool.query("update Users set login = 1 where username = $1",[username]);
+        return pool.query("update Users set login = $2 where username = $1",[username,str2]);
     }})
-    .then(()=> {req.session.context = username; res.redirect('/admin/home')});
+    .then(()=> {res.cookie('cookiename',username); res.redirect('/admin/home')});
     
 
 
@@ -52,6 +53,25 @@ exports.get_signup_page = (req,res,next) => {
         path: '/admin/login',
         editing: false
     });
+
+
+};
+
+exports.post_signup_page = (req,res,next) => {
+
+    //console.log("baba\n");
+    const username = req.body.username;
+    const password = req.body.password;
+    const str1 = '0';
+    const str2 = '1';
+    const a = pool.query("select count(*) from Users where username = $1 and password = $2 and login = $3 ;" , [username,password,str1])
+    a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
+    else
+    {
+        return pool.query("update Users set login = $2 where username = $1",[username,str2]);
+    }})
+    .then(()=> {req.session.context = username; res.redirect('/admin/home')});
+    
 
 
 };
@@ -114,9 +134,11 @@ exports.get_search_page = (req,res,next) => {
 
 exports.get_home_page = (req,res,next) => {
 
-    const username = req.session.context;
+    var username = req.cookies.cookiename;
+    console.log(username);
     // const username = "user1";
-    const a = pool.query("SELECT login from Users where username = $1 and login = true;",[username]);
+    const str1 = '1';
+    const a = pool.query("SELECT login from Users where username = $1 and login = $2;",[username,str1]);
     //const a = Prod.get_all();
     var list1;
     var list2;
@@ -125,7 +147,7 @@ exports.get_home_page = (req,res,next) => {
     var list5;
     var list6;
 
-    a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
+    a.then(val => {if (val.rowCount == 0) {return res.redirect('/admin/login')} 
     else {return pool.query("select * from Movies order by avgRating DESC LIMIT 10;");}})
     .then(val1 => {list1 = val1.rows; return pool.query("select * from Movies l, (select m.MovieId, (select count(*) from Users where last_watched = m.MovieId) as count from Movies m) as foo where l.MovieId = foo.MovieId order by foo.count DESC LIMIT 10;")})
     .then(val2 => {list2 = val2.rows; return pool.query("select * from Movie_Genre m_g, user_Genre u_g, Movies m where m.MovieId = m_g.MovieId and m_g.GenreId = u_g.GenreId and u_g.username = $1 order by m.avgRating desc LIMIT 10 ; ", [username])})
