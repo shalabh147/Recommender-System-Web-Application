@@ -57,7 +57,7 @@ sql_Rating = 'drop table if exists Rating cascade;\
     Verbal_Rating text,\
     primary key (MovieId, username),\
     foreign key (MovieId) references Movies (MovieId) on delete cascade,\
-    foreign key (username) references Users (username)\
+    foreign key (username) references Users (username) on delete cascade\
     );'
 
 sql_Movie_Genre = 'drop table if exists Movie_Genre cascade;\

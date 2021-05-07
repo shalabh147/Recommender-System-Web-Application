@@ -1,5 +1,5 @@
 import pandas as pd
-import csv, config
+import csv
 
 def filter_genre(s):
     bad_chars = ["[", "]", "{", "}", ",", ":"]
@@ -15,6 +15,15 @@ cnt = 0
 
 df = pd.read_csv('ratings_small.csv')
 res = df.groupby('movieId')['rating'].mean()
+
+df = pd.read_csv("language_codes.csv")
+lang_dict = dict(zip(df['alpha2'],df['English']))
+
+def get_lang(code):
+    try:
+        return lang_dict[code]
+    except:
+        return "English"
 
 with open('movies_metadata.csv', 'r') as file:
     csvFile = csv.reader(file)
@@ -44,7 +53,7 @@ with open('movies_metadata.csv', 'r') as file:
             if int(lines[i][id_in]) in res:
                 avg_r = res[int(lines[i][id_in])]
             lines_final.append([int(lines[i][id_in]), 
-                        lines[i][language_in], 
+                        get_lang(lines[i][language_in]), 
                         lines[i][title_in], 
                         lines[i][release_in], 
                         lines[i][popularity_in], 
@@ -81,8 +90,7 @@ with open('ratings_small.csv', 'r') as file:
         lines_final = []
         for i in range(1,len(lines)):
             if lines[i][1] in ids:
-                if int(lines[i][0]) <= config.num_users:
-                    lines_final.append([lines[i][1], "user"+str(lines[i][0]), lines[i][2], ''])
+                lines_final.append([lines[i][1], "user"+str(lines[i][0]), lines[i][2], ''])
         csvwriter.writerows(lines_final)
 
 
