@@ -88,12 +88,22 @@ exports.post_signup_page = async (req,res,next) => {
         if (a.rowCount != 0) {
             console.log("username or email_id taken")
             console.log(a.rows)
-            res.redirect('/admin/signup')
+            res.render('admin/error', {
+                pageTitle: 'Error',
+                path: '/admin/error',
+                editing: false,
+                error: "Username or email-id already taken!"
+            });
         }
         else {
             if (password != repeat_pass) {
                 console.log("repeat password not same")
-                res.redirect('/admin/signup')
+                res.render('admin/error', {
+                    pageTitle: 'Error',
+                    path: '/admin/error',
+                    editing: false,
+                    error: "Invalid username or password"
+                });
             } else {
                 const b = await pool.query("Insert into Users values ($1,$2,$3,$4,null,'1',null,null,'0');", [username, name, password, email_id])
                 req.session.name_ = username; res.redirect('/admin/preferences');
@@ -110,7 +120,14 @@ exports.get_preferences_page = async (req,res,next) => {
     const username = req.session.name_;
     const str1 = '1';
     const a = await pool.query("SELECT login from USERS where Username = $1 and login = $2;", [username,str1]);
-    if (a.rowCount == 0) res.redirect('/admin/preferences') 
+    if (a.rowCount == 0){
+        res.render('admin/error', {
+            pageTitle: 'Error',
+            path: '/admin/error',
+            editing: false,
+            error: "Login to access this page"
+        });
+    }
     else {
         const b = await pool.query("SELECT distinct language from movies;");
         const c = await pool.query("SELECT distinct genreid, genrename from movie_genre natural join genre;");
@@ -138,7 +155,12 @@ exports.post_preferences_page = async (req, res, next) => {
         const a = await pool.query("SELECT login from Users where username = $1 and login = $2;", [username,str2]);
         if (a.rowCount == 0){
             console.log(username+" not logged in");
-            res.redirect('/admin/login');
+            res.render('admin/error', {
+                pageTitle: 'Error',
+                path: '/admin/error',
+                editing: false,
+                error: "Login to access this page"
+            });
         }
         else{
             const b = await pool.query("Update Users set language_pref1 = $1, language_pref2 = $2 where username = $3;" , [pref1,pref2,username]);
@@ -173,7 +195,14 @@ exports.get_search_page = (req,res,next) => {
     const str1 = '1';
     const a = pool.query("SELECT login from Users where username = $1 and login = $2;",[username,str1]);
     //const a = Prod.get_all();
-    a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
+    a.then(val => {if (val.rowCount == 0){
+        res.render('admin/error', {
+            pageTitle: 'Error',
+            path: '/admin/error',
+            editing: false,
+            error: "Login to access this page"
+        });
+    }
     else res.render('admin/search', {
         pageTitle: 'Search',
         path: '/admin/search',
@@ -197,7 +226,12 @@ exports.post_search_page = async (req,res,next) => {
         const a = await pool.query("SELECT login from Users where username = $1 and login = $2;", [username,str2]);
         if (a.rowCount == 0){
             console.log(username+" not logged in");
-            res.redirect('/admin/login');
+            res.render('admin/error', {
+                pageTitle: 'Error',
+                path: '/admin/error',
+                editing: false,
+                error: "Login to access this page"
+            });
         }
         else{
             const b = await pool.query("with act_mov as (select m.MovieId, m.language, m.title, m.releaseDate, m.popularity, m.duration, m.avgRating from movies m, Movie_Actor m_a, actor a where a.Id = m_a.ActorId and m.MovieId = m_a.MovieId and lower(a.Name) like '%' || $1 || '%') select * from act_mov order by popularity desc limit 10;" , [keyword]);
@@ -227,7 +261,14 @@ exports.get_home_page = async (req,res,next) => {
     var list5;
     var list0;
 
-    if (a.rowCount == 0) {return res.redirect('/admin/login')}
+    if (a.rowCount == 0) {
+        res.render('admin/error', {
+            pageTitle: 'Error',
+            path: '/admin/error',
+            editing: false,
+            error: "Invalid credentials"
+        });
+    }
     else {list0 = await pool.query("select * from users, movies where username=$1 and last_watched=movieid;",[username])
     list1 = await pool.query("select movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies order by avgRating DESC LIMIT 10;")
     list2 = await pool.query("select l.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies l, (select m.MovieId, (select count(*) from Users where last_watched = m.MovieId) as count from Movies m) as foo where l.MovieId = foo.MovieId order by foo.count DESC LIMIT 10;")
@@ -273,7 +314,14 @@ exports.get_ratings_page = async (req,res,next) => {
 
     const str1 = '1';
     const a = await pool.query("SELECT login from USERS where Username = $1 and login = $2;", [username,str1]);
-    if (a.rowCount == 0) res.redirect('/admin/login') 
+    if (a.rowCount == 0){
+        res.render('admin/error', {
+            pageTitle: 'Error',
+            path: '/admin/error',
+            editing: false,
+            error: "Login to access this page"
+        });
+    }
     else {
      res.render('admin/ratings', {
         pageTitle: 'Give Ratings',
@@ -304,7 +352,12 @@ exports.post_ratings_page = async (req,res,next) => {
         const a = await pool.query("SELECT login from Users where username = $1 and login = $2;", [username,str2]);
         if (a.rowCount == 0){
             console.log(username+" not logged in");
-            res.redirect('/admin/login');
+            res.render('admin/error', {
+                pageTitle: 'Error',
+                path: '/admin/error',
+                editing: false,
+                error: "Login to access this page"
+            });
         }
         else{
             const b = await pool.query("select * from rating where username = $1 and movieid = $2",[username,movie_id]);
@@ -335,7 +388,14 @@ exports.get_movies_page = async (req,res,next) => {
     
     const str1 = '1';
     const a = await pool.query("SELECT login from USERS where Username = $1 and login = $2;", [username,str1]);
-    if (a.rowCount == 0) res.redirect('/admin/login') 
+    if (a.rowCount == 0){
+        res.render('admin/error', {
+            pageTitle: 'Error',
+            path: '/admin/error',
+            editing: false,
+            error: "Login to access movies page"
+        });
+    }
     else {
         const b = await pool.query("SELECT movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from MOVIES where movieid = $1", [movie_id]);
         const c = await pool.query("select * from actor, movie_actor where id=actorid and movieid=$1", [movie_id]);
@@ -381,7 +441,12 @@ exports.post_movies_page = async (req,res,next) => {
         const a = await pool.query("SELECT login from Users where username = $1 and login = $2;", [username,str2]);
         if (a.rowCount == 0){
             console.log(username+" not logged in");
-            res.redirect('/admin/login');
+            res.render('admin/error', {
+                pageTitle: 'Error',
+                path: '/admin/error',
+                editing: false,
+                error: "Login to access this page"
+            });
         }
         else{
             const b = await pool.query("select * from rating where username=$1 and movieid=$2", [username, movie_id]);
@@ -420,7 +485,14 @@ exports.get_profile_page = async (req,res,next) => {
     const str1 = '1';
     const a = await pool.query("SELECT login from Users where username = $1 and login = $2;",[username,str1]);
     //const a = Prod.get_all();
-    if (a.rowCount == 0) res.redirect('/admin/login') 
+    if (a.rowCount == 0){
+        res.render('admin/error', {
+            pageTitle: 'Error',
+            path: '/admin/error',
+            editing: false,
+            error: "Login to access this page"
+        });
+    }
     else{ 
         const b = await pool.query("SELECT GenreName from User_Genre, Genre where User_Genre.username = $1 and  User_Genre.GenreId = Genre.GenreId;",[username]);
         var genre1 = "";
@@ -475,7 +547,12 @@ exports.post_profile_page = async (req,res,next) => {
         const a = await pool.query("SELECT login from Users where username = $1 and login = $2;", [username,str2]);
         if (a.rowCount == 0){
             console.log(username+" not logged in");
-            res.redirect('/admin/login');
+            res.render('admin/error', {
+                pageTitle: 'Error',
+                path: '/admin/error',
+                editing: false,
+                error: "Login to access this page"
+            });
         }
         else{
             const d = await pool.query("select * from users where lower(username) like '%' || $1 || '%' order by username" , [keyword]);
@@ -509,7 +586,12 @@ exports.post_admin_page = async (req,res,next) => {
     var str1 = '1';
     const a = await pool.query("SELECT * from USERS where Username = $1 and login = $2 and admin = $2;",[username, str1]);
     if(a.rowCount == 0){
-        return res.redirect('/admin/home');
+        res.render('admin/error', {
+            pageTitle: 'Error',
+            path: '/admin/error',
+            editing: false,
+            error: "Login via admin to access this page"
+        });
     }else{
         const title = req.body.title;
         const release_date = req.body.release_date;
@@ -549,11 +631,21 @@ exports.post_admin_page = async (req,res,next) => {
                 const j = await pool.query("INSERT into movie_director values ( $2, $1)", [directorid.rows[0].id, movieid.rows[0].movieid]);
                 const k = await pool.query("INSERT into movie_genre values ( $2, $1)", [genreid.rows[0].genreid, movieid.rows[0].movieid]);
             }else{
-                return res.redirect('/admin/admin');
+                res.render('admin/error', {
+                    pageTitle: 'Error',
+                    path: '/admin/error',
+                    editing: false,
+                    error: "Movie you are trying to remove does not exist"
+                });
             }
         }else{    
             if(indicator == "add"){
-                return res.redirect('/admin/admin');
+                res.render('admin/error', {
+                    pageTitle: 'Error',
+                    path: '/admin/error',
+                    editing: false,
+                    error: "Movie you are trying to add already exists"
+                });
             }else{
                 const c = await pool.query("DELETE from movies where title = $1 and releasedate = $2", [title, release_date]);
             }
