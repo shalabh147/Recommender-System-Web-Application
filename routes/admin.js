@@ -12,6 +12,9 @@ router.get('/home',adminCon.get_home_page);
 router.get('/login',adminCon.get_login_page);
 router.post('/login',adminCon.post_login_page);
 
+router.get('/signup',adminCon.get_signup_page);
+router.post('/signup',adminCon.post_signup_page);
+
 router.get('/search',adminCon.get_search_page);
 router.post('/search',adminCon.post_search_page);
 
