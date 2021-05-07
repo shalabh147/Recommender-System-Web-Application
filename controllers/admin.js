@@ -50,38 +50,45 @@ exports.post_login_page = async (req,res,next) => {
     }
 
 };
-/*
-exports.get_signup_page = (req,res,next) => {
+// exports.get_signup_page = (req,res,next) => {
 
 
-    res.render('admin/login', {
-        pageTitle: 'Login',
-        path: '/admin/login',
-        editing: false
-    });
+//     res.render('admin/login', {
+//         pageTitle: 'Login',
+//         path: '/admin/login',
+//         editing: false
+//     });
 
 
-};
+// };
 
-exports.post_signup_page = (req,res,next) => {
+// exports.post_signup_page = async (req,res,next) => {
 
-    //console.log("baba\n");
-    const username = req.body.username;
-    const password = req.body.password;
-    const str1 = '0';
-    const str2 = '1';
-    const a = pool.query("select count(*) from Users where username = $1 and password = $2 and login = $3 ;" , [username,password,str1])
-    a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
-    else
-    {
-        return pool.query("update Users set login = $2 where username = $1",[username,str2]);
-    }})
-    .then(()=> {req.session.context = username; res.redirect('/admin/home')});
+//     //console.log("baba\n");
+//     const username = req.body.username;
+//     const name = req.body.name;
+//     const email_id = req.body.email_id;
+//     const password = req.body.password;
+//     const repeat_pass = req.body.repeat_pass;
+//     const str1 = '0';
+//     const str2 = '1';
+//     try {
+//         const a = await pool.query("select * from Users where username = $1 or email_id = $2", [username, email_id]])
+//     } catch (error) {
+        
+//     }
+//     if (a.rowCount == 0) res.redirect('/admin/login') 
+//     else
+//     {
+//         return pool.query("update Users set login = $2 where username = $1",[username,str2]);
+//     }
+//     req.session.context = username; res.redirect('/admin/home')});
     
 
 
-};
+// };
 
+/*
 
 exports.get_lang_pref = (req,res,next) => {
 
@@ -220,7 +227,7 @@ exports.get_home_page = (req,res,next) => {
 }
 
 
-exports.get_ratings_page = (req,res,next) => {
+exports.get_ratings_page = async (req,res,next) => {
 
     const username = req.session.name_;
     const movie_id = req.session.movie_id;
@@ -271,7 +278,7 @@ exports.post_ratings_page = async (req,res,next) => {
             }
             else
             {
-                const d = await pool.query("update rating set num_rating = $3, verbal_rating = $4 where username = $1 and movieid = $2 ;",[username,movie_id,num_rating,verbal_rating]))
+                const d = await pool.query("update rating set num_rating = $3, verbal_rating = $4 where username = $1 and movieid = $2 ;",[username,movie_id,num_rating,verbal_rating])
             }
             res.redirect('/admin/home');
         }

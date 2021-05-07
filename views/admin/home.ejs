@@ -22,12 +22,14 @@
      <% for(var i=0; i<list1.length; i++){ %> 
 
       <div class="movie-card">
+          
+        <form action="/admin/movies" method="get">
           <div class="face face1">
               <div class="content">
                   <!-- <img src="https://github.com/Jhonierpc/WebDevelopment/blob/master/CSS%20Card%20Hover%20Effects/img/design_128.png?raw=true"> -->
                   <h3><%= list1[i].title %></h3>
                   <h4><%= list1[i].releasedate %></h4>
-                  <h4><%= list1[i].movieid %></h4>                  
+                  <h4><%= list1[i].movieId %></h4>
               </div>
           </div>
           <div class="face face2">
@@ -39,14 +41,14 @@
                     <label for="moviename" class="label"></label>
                     <input type="hidden" name="moviename" id="moviename" value=<%= list1[i].title %>>
                 </form> -->
-                <form action="/admin/movies" method="GET">
+                    <!-- <label for="email_id" class="label">Email id</label> -->
                     <button class="btn" type="submit">More info</button>
-                    <input type="hidden" name="movie_id" value="<%= list1[i].movieid %>">
-                </form>
+                    <input type="hidden" name="movie_id" id="movie_id" value=<%=list1[i].movieid%>>
                     <a href="#">Watch Now</a>
                     <a href="#">Give Rating</a>
               </div>
           </div>
+        </form>
       </div>
       <% } %>
   </div>
