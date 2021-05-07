@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="parallax">
+  <div class="login-wrap">
+    <div class="login-html">
+      <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Preferences</label>
+      <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab"></label>
+      <div class="login-form">
+        <form class="sign-in-htm" action="http://localhost:3000/admin/preferences" method="POST">
+          <div class="sign-in-htm">
+          <div class="group">
+            <label for="user" class="label">Language Preference-1</label>
+            <input list="languages" id="langpref_1" class="input" >
+            <datalist id="languages"> 
+              <% for(int i =0; i<list1.length; i++) {%>
+                <option value=<%= list1[i].language %> />
+              <% } %>
+            </datalist>
+          </div>
+          <div class="group">
+            <label for="user" class="label">Language Preference-2</label>
+            <input list="languages" id="langpref_2" class="input" >
+            <datalist id="languages"> 
+              <% for(int i =0; i<list1.length; i++) {%>
+                <option value=<%= list1[i].language %> />
+              <% } %>
+            </datalist>
+          </div>
+          <div class="group">
+            <label for="user" class="label">Genre Preference-1</label>
+            <input list="genres" id="genrepref_1" class="input" >
+            <datalist id="genres"> 
+              <% for(int i =0; i<list2.length; i++) {%>
+                <option value=<%= list2[i].genrename %> />
+              <% } %>
+            </datalist>
+          </div>
+          <div class="group">
+            <label for="user" class="label">Genre Preference-2</label>
+            <input list="genres" id="genrepref_2" class="input" >
+            <datalist id="genres"> 
+              <% for(int i =0; i<list2.length; i++) {%>
+                <option value=<%= list2[i].genrename %> />
+              <% } %>
+            </datalist>
+          </div>
+          <button class="btn" type="submit">Confirm Changes</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</body>

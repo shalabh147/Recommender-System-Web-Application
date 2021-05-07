@@ -50,84 +50,95 @@ exports.post_login_page = async (req,res,next) => {
     }
 
 };
-// exports.get_signup_page = (req,res,next) => {
+exports.get_signup_page = (req,res,next) => {
 
 
-//     res.render('admin/login', {
-//         pageTitle: 'Login',
-//         path: '/admin/login',
-//         editing: false
-//     });
-
-
-// };
-
-// exports.post_signup_page = async (req,res,next) => {
-
-//     //console.log("baba\n");
-//     const username = req.body.username;
-//     const name = req.body.name;
-//     const email_id = req.body.email_id;
-//     const password = req.body.password;
-//     const repeat_pass = req.body.repeat_pass;
-//     const str1 = '0';
-//     const str2 = '1';
-//     try {
-//         const a = await pool.query("select * from Users where username = $1 or email_id = $2", [username, email_id]])
-//     } catch (error) {
-        
-//     }
-//     if (a.rowCount == 0) res.redirect('/admin/login') 
-//     else
-//     {
-//         return pool.query("update Users set login = $2 where username = $1",[username,str2]);
-//     }
-//     req.session.context = username; res.redirect('/admin/home')});
-    
-
-
-// };
-
-/*
-
-exports.get_lang_pref = (req,res,next) => {
-
-    const username = req.body.username;
-    const a = pool.query("SELECT login from USERS where Username = $1 and login = 1;",[username]);
-    //const a = Prod.get_all();
-    a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
-    else return pool.query("SELECT distinct language from movies;")})
-    .then(value => {res.render('admin/lang_pref', {
-        pageTitle: 'Language Preferences',
-        path: '/admin/lang_pref',
-        editing: false,
-        language:value.rows
+    res.render('admin/login', {
+        pageTitle: 'Login',
+        path: '/admin/login',
+        editing: false
     });
-    });
-
 
 
 };
 
-exports.get_genre_pref = (req,res,next) => {
+exports.post_signup_page = async (req,res,next) => {
 
+    //console.log("baba\n");
     const username = req.body.username;
-    const a = pool.query("SELECT login from USERS where Username = $1 and login = 1;",[username]);
-    
-    //const a = Prod.get_all();
-    a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
-    else return pool.query("SELECT distinct genre from movies;")})
-    .then(value => {res.render('admin/lang_pref', {
-        pageTitle: 'Genre Preferences',
-        path: '/admin/lang_pref',
-        editing: true,
-        genre:value.rows
-    });});
-
-
+    const name = req.body.name;
+    const email_id = req.body.email_id;
+    const password = req.body.password;
+    const repeat_pass = req.body.repeat_pass;
+    try {
+        const a = await pool.query("select * from Users where username = $1 or email_id = $2", [username, email_id])
+        if (a.rowCount != 0) {
+            console.log("username or email_id taken")
+            console.log(a.rows)
+            res.redirect('/admin/signup')
+        }
+        else {
+            if (password != repeat_pass) {
+                console.log("repeat password not same")
+                res.redirect('/admin/signup')
+            } else {
+                const b = await pool.query("Insert into Users values ($1,$2,$3,$4,null,'1',null,null,'0');", [username, name, password, email_id])
+                req.session.name_ = username; res.redirect('/admin/home');
+            }
+        }
+    } catch (e) {
+        console.log(e);
+        res.status(400).redirect('/admin/signup')
+    }
 };
 
-*/
+exports.get_preferences_page = async (req,res,next) => {
+
+    const username = req.session.name_;
+    const str1 = '1';
+    const a = await pool.query("SELECT login from USERS where Username = $1 and login = $2;", [username,str1]);
+    if (a.rowCount == 0) res.redirect('/admin/preferences') 
+    else {
+        const b = await pool.query("SELECT distinct lananguage from movies;");
+        const c = await pool.query("SELECT distinct genreid, genrename from movie_genre natural join genre;");
+        var list1 = b.rows;
+        var list2 = c.rows;
+        res.render('admin/preferences', {
+            pageTitle: 'Preferences',
+            path: '/admin/preferences',
+            editing: false,
+            list1: list1,
+            list2: list2
+        });
+    }
+};
+
+exports.post_preferences_page = async (req, res, next) => {
+    try{
+        const username = req.session.name_;
+        const str1 = '0';
+        const str2 = '1';
+        const pref1 = req.body.langpref_1;
+        const pref2 = req.body.langpref_2;
+        const genre_id1 = req.body.genrepref_1;
+        const genre_id2 = req.body.genrepref_2;
+        const a = await pool.query("SELECT login from Users where username = $1 and login = $2;", [username,str2]);
+        if (a.rowCount == 0){
+            console.log(username+" not logged in");
+            res.redirect('/admin/login');
+        }
+        else{
+            const b = await pool.query("Update Users set language1 = $1, language2 = $2 where username = $3;" , [pref1,pref2,username]);
+            const c = await pool.query("Insert into User_Genre values ($1,$2); " , [username, genre_id1]);
+            const d = await pool.query("Insert into User_Genre values ($1,$2); " , [username, genre_id2]);
+            res.redirect('/admin/home');
+        }
+    }
+    catch (e){
+        console.log(e);
+        res.status(400).redirect('/admin/login')
+    }
+}
 
 exports.get_search_page = (req,res,next) => {
 
