@@ -219,30 +219,70 @@ exports.get_home_page = (req,res,next) => {
     //a.then(value => {res.render('prods', {pageTitle: 'Products', path: '/prods', editing: false, articles:value.rows});});
 }
 
-/*
+
 exports.get_ratings_page = (req,res,next) => {
 
-    const username = req.body.username;
-    const movie_id = req.body.movieid;
-    const movie_name = req.body.moviename;
+    const username = req.session.name_;
+    const movie_id = req.session.movie_id;
+    const movie_name = req.session.movie_name;
+    const num_rating = req.session.num_rating;
+    const verbal_rating = req.session.verbal_rating;
 
-    const a = pool.query("SELECT login from USERS where Username = $1 and login = 1;",[username]);
-    //const a = Prod.get_all();
-    a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
-    else res.render('admin/ratings', {
+    const str1 = '1';
+    const a = await pool.query("SELECT login from USERS where Username = $1 and login = $2;", [username,str1]);
+    if (a.rowCount == 0) res.redirect('/admin/login') 
+    else {
+     res.render('admin/ratings', {
         pageTitle: 'Give Ratings',
         path: '/admin/ratings',
         editing: false,
         user_name:username,
         movie_name:movie_name,
-        movie_id:movie_id
-    }) });
+        movie_id:movie_id,
+        num_rating:num_rating,
+        verbal_rating:verbal_rating
+    })};
 
     
 
     //a.then(value => {res.render('prods', {pageTitle: 'Products', path: '/prods', editing: false, articles:value.rows});});
 }
-*/
+
+
+exports.post_ratings_page = async (req,res,next) => {
+
+    try{
+        const username = req.body.username;
+        const movie_id = req.body.movieid;
+        const num_rating = req.body.num_rating;
+        const verbal_rating = req.body.verbal_rating;
+        const str1 = '0';
+        const str2 = '1';
+        const a = await pool.query("SELECT login from Users where username = $1 and login = $2;", [username,str2]);
+        if (a.rowCount == 0){
+            console.log(username+" not logged in");
+            res.redirect('/admin/login');
+        }
+        else{
+            const b = await pool.query("select * from rating where username = $1 and movieid = $2",[username,movie_id]);
+            if(b.rowCount == 0)
+            {
+                const c = await pool.query("insert into rating values ($1, $2, $3, $4)" ,[username,movie_id,num_rating,verbal_rating]);
+            }
+            else
+            {
+                const d = await pool.query("update rating set num_rating = $3, verbal_rating = $4 where username = $1 and movieid = $2 ;",[username,movie_id,num_rating,verbal_rating]))
+            }
+            res.redirect('/admin/home');
+        }
+    }
+    catch (e){
+        console.log(e);
+        res.status(400).redirect('/admin/login')
+    }
+
+};
+
 
 exports.get_movies_page = async (req,res,next) => {
 
