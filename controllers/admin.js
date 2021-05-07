@@ -87,7 +87,6 @@ exports.post_signup_page = async (req,res,next) => {
         const a = await pool.query("select * from Users where username = $1 or email_id = $2", [username, email_id])
         if (a.rowCount != 0) {
             console.log("username or email_id taken")
-            console.log(a.rows)
             res.render('admin/error', {
                 pageTitle: 'Error',
                 path: '/admin/error',
@@ -96,13 +95,13 @@ exports.post_signup_page = async (req,res,next) => {
             });
         }
         else {
-            if (password != repeat_pass) {
+            if (password != repeat_pass || password == "" || username == "" || email_id == "") {
                 console.log("repeat password not same")
                 res.render('admin/error', {
                     pageTitle: 'Error',
                     path: '/admin/error',
                     editing: false,
-                    error: "Invalid username or password"
+                    error: "Invalid Credentials!"
                 });
             } else {
                 const b = await pool.query("Insert into Users values ($1,$2,$3,$4,null,'1',null,null,'0');", [username, name, password, email_id])
@@ -234,8 +233,8 @@ exports.post_search_page = async (req,res,next) => {
             });
         }
         else{
-            const b = await pool.query("with act_mov as (select m.MovieId, m.language, m.title, m.releaseDate, m.popularity, m.duration, m.avgRating from movies m, Movie_Actor m_a, actor a where a.Id = m_a.ActorId and m.MovieId = m_a.MovieId and lower(a.Name) like '%' || $1 || '%') select * from act_mov order by popularity desc limit 10;" , [keyword]);
-            const c = await pool.query("with mov as (select * from Movies where lower(title) like '%' || $1 || '%') select * from mov order by popularity desc limit 10;" , [keyword]);
+            const b = await pool.query("with act_mov as (select m.MovieId, m.language, m.title, m.releaseDate, m.popularity, m.duration, m.avgRating from movies m, Movie_Actor m_a, actor a where a.Id = m_a.ActorId and m.MovieId = m_a.MovieId and lower(a.Name) like '%' || $1 || '%') select movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from act_mov order by popularity desc limit 10;" , [keyword]);
+            const c = await pool.query("with mov as (select * from Movies where lower(title) like '%' || $1 || '%') select movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from mov order by popularity desc limit 10;" , [keyword]);
             req.session.search_query1 = c;
             req.session.search_query2 = b;
             res.redirect('/admin/search');
@@ -262,12 +261,7 @@ exports.get_home_page = async (req,res,next) => {
     var list0;
 
     if (a.rowCount == 0) {
-        res.render('admin/error', {
-            pageTitle: 'Error',
-            path: '/admin/error',
-            editing: false,
-            error: "Invalid credentials"
-        });
+        return res.redirect('/admin/login')
     }
     else {list0 = await pool.query("select * from users, movies where username=$1 and last_watched=movieid;",[username])
     list1 = await pool.query("select movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies order by avgRating DESC LIMIT 10;")
@@ -299,6 +293,7 @@ exports.post_home_page = async (req,res,next) => {
     req.session.movie_id = movie_id
     if (req.body.indic == "y"){
         const d = await pool.query("update Users set last_watched = $2 where username = $1;", [username,movie_id])
+        const e = await pool.query("update Movies set popularity=popularity+1 where movieid = $1;", [movie_id])
     }
     return res.redirect('/admin/movies')
 }
@@ -541,7 +536,8 @@ exports.post_profile_page = async (req,res,next) => {
 
     try{
         const username = req.session.name_;
-        var keyword = req.body.search.toLowerCase();
+        
+        var indic = req.body.indic
         const str1 = '0';
         const str2 = '1';
         const a = await pool.query("SELECT login from Users where username = $1 and login = $2;", [username,str2]);
@@ -555,8 +551,22 @@ exports.post_profile_page = async (req,res,next) => {
             });
         }
         else{
-            const d = await pool.query("select * from users where lower(username) like '%' || $1 || '%' order by username" , [keyword]);
-            req.session.search_friend = d;
+            if(indic == "y"){
+                var friend_id = req.body.friend_id
+                const e = await pool.query("select * from friends where (username1=$1 and username2=$2) or (username1=$2 and username2=$1)",[username,friend_id])
+                if (e.rowCount == 0){
+                    const f = await pool.query("insert into friends values ($1,$2)",[username,friend_id])
+                }
+            }
+            else if(indic == "z"){
+                var friend_id = req.body.friend_id
+                const g = await pool.query("delete from friends where (username1=$1 and username2=$2) or (username1=$2 and username2=$1)",[username,friend_id])
+            }
+            else{
+                var keyword = req.body.search.toLowerCase();
+                const d = await pool.query("select * from users where lower(username) like '%' || $1 || '%' order by username" , [keyword]);
+                req.session.search_friend = d;
+            }
             res.redirect('/admin/profile');
         }
     }
@@ -567,14 +577,26 @@ exports.post_profile_page = async (req,res,next) => {
 
 };
 
-exports.get_admin_page = (req,res,next) => {
+exports.get_admin_page = async (req,res,next) => {
 
-
-    res.render('admin/admin', {
-        pageTitle: 'Admin',
-        path: '/admin/admin',
-        editing: false
-    });
+    const username = req.session.name_;
+    var str1 = '1';
+    const a = await pool.query("SELECT * from USERS where Username = $1 and login = $2 and admin = $2;",[username, str1]);
+    if(a.rowCount == 0){
+        res.render('admin/error', {
+            pageTitle: 'Error',
+            path: '/admin/error',
+            editing: false,
+            error: "Login via admin to access this page"
+        });
+    }
+    else{
+        res.render('admin/admin', {
+            pageTitle: 'Admin',
+            path: '/admin/admin',
+            editing: false
+        });
+    }
 
 
 };
@@ -647,6 +669,10 @@ exports.post_admin_page = async (req,res,next) => {
                     error: "Movie you are trying to add already exists"
                 });
             }else{
+                const movieid = await pool.query("select movieid from movies where title = $1 and releasedate = $2", [title, release_date]);
+                const h = await pool.query("Delete from movie_actor where movieid=$1", [movieid.rows[0].movieid]);
+                const j = await pool.query("Delete from movie_director where movieid=$1", [movieid.rows[0].movieid]);
+                const k = await pool.query("Delete from movie_genre where movieid=$1", [movieid.rows[0].movieid]);
                 const c = await pool.query("DELETE from movies where title = $1 and releasedate = $2", [title, release_date]);
             }
         }

@@ -210,6 +210,20 @@ div.scrollmenu h1{
     position: relative;
     cursor: pointer;
     padding:20px;
+    overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  -ms-word-break: break-all;
+  /* This is the dangerous one in WebKit, as it breaks things wherever */
+  word-break: break-all;
+  /* Instead use this non-standard one: */
+  word-break: break-word;
+
+  /* Adds a hyphen where the word breaks, if supported (No Blink) */
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 
 .container .movie-card .face{
@@ -254,6 +268,14 @@ div.scrollmenu h1{
     font-size: 1.5em;
 }
 
+.container .movie-card .face.face1 .content h4{
+  margin: 10px 0 0;
+  padding: 0;
+  color: #fce8e6;
+  text-align: center;
+  font-size: 1em;
+}
+
 .container .movie-card .face.face2{
     position: relative;
     background: #333;
@@ -275,12 +297,14 @@ div.scrollmenu h1{
     padding: 0;
 }
 
-.container .movie-card .face.face2 .content a{
+.container .movie-card .face.face2 .content button{
     margin: 15px 0 0;
+    width: 150px;
+    background-color: black;
     display:  inline-block;
     text-decoration: none;
     font-weight: 900;
-    color: black;
+    color: white;
     padding: 5px;
     border: 3px solid black;
 }
@@ -319,6 +343,9 @@ CORE STYLES
 
 .menu__link{
   display: var(--menuLinkDisplay, block);
+  color: white;
+  background-color: black;
+  /* border-color: white; */
 }
 
 /* 

@@ -208,6 +208,7 @@ div.scrollmenu h1{
     position: relative;
     display: flex;
     justify-content: space-between;
+    overflow-wrap: break-word;
 }
 
 .container .movie-card{
@@ -258,6 +259,14 @@ div.scrollmenu h1{
   font-size: 1.5em;
 }
 
+.container .movie-card .face.face1 .content h4{
+  margin: 10px 0 0;
+  padding: 0;
+  color: #fce8e6;
+  text-align: center;
+  font-size: 1em;
+}
+
 .container .movie-card .face.face2{
   position: relative;
   background: #333;
@@ -279,7 +288,7 @@ div.scrollmenu h1{
   padding: 0;
 }
 
-.container .movie-card .face.face2 .content a{
+.container .movie-card .face.face2 .content button{
   margin: 15px 0 0;
   display:  inline-block;
   text-decoration: none;
@@ -324,6 +333,8 @@ CORE STYLES
 
 .menu__link{
   display: var(--menuLinkDisplay, block);
+  color: white;
+  background-color: black;
 }
 
 /* 
