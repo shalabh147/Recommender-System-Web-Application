@@ -10,15 +10,15 @@
 </head>
 <body>
   <div class="parallax">
-  <nav class="page__menu page__custom-settings menu">
-    <ul class="menu__list r-list">
-      <li class="menu__group"><a href="#0" class="menu__link r-link text-underlined">Home</a></li>
-      <li class="menu__group"><a href="#0" class="menu__link r-link text-underlined">Search</a></li>
-      <li class="menu__group"><a href="#0" class="menu__link r-link text-underlined">My profile</a></li>
-      <li class="menu__group"><a href="#0" class="menu__link r-link text-underlined">Admin</a></li>
-      <li class="menu__group"><a href="#0" class="menu__link r-link text-underlined">Logout</a></li>
-    </ul>
-  </nav>
+    <nav class="page__menu page__custom-settings menu">
+      <ul class="menu__list r-list">
+        <form class="nav-bar" action="http://localhost:3000/admin/home" method="GET"><li class="menu__group"><button class="menu__link r-link text-underlined">Home</button></li></form>
+        <form class="nav-bar" action="http://localhost:3000/admin/search" method="GET"><li class="menu__group"><button class="menu__link r-link text-underlined">Search</button></li></form>
+        <form class="nav-bar" action="http://localhost:3000/admin/profile" method="GET"><li class="menu__group"><button class="menu__link r-link text-underlined">My profile</button></li></form>
+        <form class="nav-bar" action="http://localhost:3000/admin/admin" method="POST"><li class="menu__group"><button class="menu__link r-link text-underlined">Admin</button></li></form>
+        <form class="nav-bar" action="http://localhost:3000/admin/login" method="POST"><li class="menu__group"><button class="menu__link r-link text-underlined">Logout</button></li></form>
+      </ul>
+    </nav>
 
   <div class="login-wrap">
     <div class="login-html">
@@ -26,42 +26,56 @@
       <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Remove Movie</label>
       <div class="login-form">
         <div class="sign-in-htm">
+        <form class="sign-in-htm" action="http://localhost:3000/admin/admin" method="POST">
           <div class="group">
-            <label for="user" class="label">Title</label>
-            <input id="title" type="text" class="input">
+            <label for="title" class="label">Title</label>
+            <input id="title" name="title" type="text" class="input">
           </div>
           <div class="group">
-            <label for="user" class="label">Genre</label>
-            <input id="genre-list" type="text" class="input">
+            <label for="genre" class="label">Genre</label>
+            <input id="genre" name="genre" type="text" class="input">
           </div>
           <div class="group">
-            <label for="user" class="label">Actors</label>
-            <input id="actors" type="text" class="input" placeholder="Please write names of the actors comma separated">
+            <label for="Language" class="label">Language</label>
+            <input id="Language" name="Language" type="text" class="input">
           </div>
           <div class="group">
-            <label for="user" class="label">Directors</label>
-            <input id="directors" type="text" class="input" placeholder="Please write names of the directors comma separated">
+            <label for="actor1" class="label">Actor 1</label>
+            <input id="actor1" name = "actor1" type="text" class="input">
           </div>
           <div class="group">
-            <label for="user" class="label">Release Date</label>
-            <input id="user" type="text" class="input">
+            <label for="actor2" class="label">Actor 2</label>
+            <input id="actor2" name = "actor2" type="text" class="input">
           </div>
           <div class="group">
-            <input type="submit" class="button" value="Add">
+            <label for="director" class="label">Director</label>
+            <input id="director" name = "director" type="text" class="input">
           </div>
+          <div class="group">
+            <label for="release_date" class="label">Release Date(YYYY-DD-MM)</label>
+            <input id="release_date" name = "release_date" type="date" class="input">
+          </div>
+          <div class="group">
+            <label for="duration" class="label">Duration</label>
+            <input id="duration" name="duration" type="float" class="input">
+          </div>
+          <button class="btn" type="submit">Add Movie</button>
+          <input type="hidden" name="indicator" id="indicator" value = "add">
+        </form>
         </div>
         <div class="sign-up-htm">
+        <form class="sign-in-htm" action="http://localhost:3000/admin/admin" method="POST">
           <div class="group">
-            <label for="user" class="label">Movie Name</label>
-            <input id="movie" type="text" class="input">
+            <label for="title" class="label">Title</label>
+            <input id="title" name = "title" type="text" class="input">
           </div>
           <div class="group">
-            <label for="pass" class="label">Movie ID</label>
-            <input id="movieid" type="number" class="input">
+            <label for="release_date" class="label">Release Date(YYYY-DD-MM)</label>
+            <input id="release_date" name = "release_date" type="date" class="input">
           </div>
-          <div class="group">
-            <input type="submit" class="button" value="Remove">
-          </div>
+          <input type="hidden" name="indicator" id="indicator" value = "remove">
+          <button class="btn" type="submit">Remove Movie</button>
+          </form>
         </div>
       </div>
     </div>

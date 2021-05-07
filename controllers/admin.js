@@ -481,13 +481,65 @@ exports.post_profile_page = async (req,res,next) => {
 
 };
 
-/*
-exports.get_admin_page = (req,res,next) => {
 
-    const username = req.body.username;
 
-    const a = pool.query("SELECT * from USERS where Username = $1 and login = 1 and admin = 1;",[username]);
+exports.get_admin_page = async (req,res,next) => {
 
+    const username = req.session.name_;
+    const indicator = req.body.indicator;
+    var str1 = '1';
+    const a = await pool.query("SELECT * from USERS where Username = $1 and login = $2 and admin = $2;",[username, str1]);
+    if(a.rowCount == 0){
+        res.redirect('/admin/home');
+    }else{
+        const title = req.body.title;
+        const release_date = req.body.release_date;
+        const b = await pool.query("SELECT * from MOVIES where title = $1 and releasedate = $2", [title, release_date]);
+        if(b.rowCount == 0){
+            if(indicator == "add"){
+                const duration = req.body.duration;
+                const genre = req.body.genre;
+                const language = req.body.Language;
+                const actor1 = req.body.actor1;
+                const actor2 = req.body.actor2;
+                const director = req.body.director;
+                const c = await pool.query("INSERT into MOVIES values ((select max(movieid)+1 from Movies), $1, $2, $3, '0', $4, '0')", [language, title, release_date, duration]);
+                const d = await pool.query("select * from actor where name = $1", [actor1]);
+                const e = await pool.query("select * from actor where name = $1", [actor2]);
+                const f = await pool.query("select * from director where name = $1", [director]);
+                const genre_present = await pool.query("select * from genre where genrename = $1", [genre]);
+                if(d.rowCount == 0){
+                    const g = await pool.query("INSERT into actor values ((select max(id)+1 from actor), $1)", [actor1]);
+                }
+                if(e.rowCount == 0){
+                    const g = await pool.query("INSERT into actor values ((select max(id)+1 from actor), $1)", [actor2]);
+                }
+                if(f.rowCount == 0){
+                    const g = await pool.query("INSERT into director values ((select max(id)+1 from director), $1)", [director]);
+                }
+                if(genre_present.rowCount == 0){
+                    const g = await pool.query("INSERT into genre values ((select max(genreid)+1 from genre), $1)", [genre]);
+                }
+                const actor1id = await pool.query("select id from actor where name = $1", [actor1]);
+                const movieid = await pool.query("select movieid from movies where title = $1 and releasedate = $2", [title, release_date]);
+                const actor2id = await pool.query("select id from actor where name = $1", [actor2]);
+                const directorid = await pool.query("select id from director where name = $1", [director]);
+                const genreid = await pool.query("select genreid from genre where name = $1", [genre]);
+                const h = await pool.query("INSERT into movie_actor values ( $2, $1)", [actor1id.rows[0], movieid.rows[0]]);
+                const i = await pool.query("INSERT into movie_actor values ( $2, $1)", [actor2id.rows[0], movieid.rows[0]]);
+                const j = await pool.query("INSERT into movie_director values ( $2, $1)", [directorid.rows[0], movieid.rows[0]]);
+                const k = await pool.query("INSERT into movie_genre values ( $2, $1)", [genreid.rows[0], movieid.rows[0]]);
+            }else{
+                res.redirect('/admin/admin');
+            }
+        }else{    
+            if(indicator == "add"){
+                res.redirect('/admin/admin');
+            }else{
+                const c = await pool.query("DELETE from movies where title = $1 and releasedate = $2", [title, release_date]);
+            }
+        }
+    }
     a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
     else res.render('admin/admin', {
         pageTitle: 'Admin',
@@ -505,7 +557,7 @@ exports.get_admin_page = (req,res,next) => {
 
 
 
-
+/*
 
 
 
