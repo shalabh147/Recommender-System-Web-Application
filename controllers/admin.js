@@ -50,43 +50,50 @@ exports.post_login_page = async (req,res,next) => {
     }
 
 };
-// exports.get_signup_page = (req,res,next) => {
+exports.get_signup_page = (req,res,next) => {
 
 
-//     res.render('admin/login', {
-//         pageTitle: 'Login',
-//         path: '/admin/login',
-//         editing: false
-//     });
+    res.render('admin/login', {
+        pageTitle: 'Login',
+        path: '/admin/login',
+        editing: false
+    });
 
 
-// };
+};
 
-// exports.post_signup_page = async (req,res,next) => {
+exports.post_signup_page = async (req,res,next) => {
 
-//     //console.log("baba\n");
-//     const username = req.body.username;
-//     const name = req.body.name;
-//     const email_id = req.body.email_id;
-//     const password = req.body.password;
-//     const repeat_pass = req.body.repeat_pass;
-//     const str1 = '0';
-//     const str2 = '1';
-//     try {
-//         const a = await pool.query("select * from Users where username = $1 or email_id = $2", [username, email_id]])
-//     } catch (error) {
-        
-//     }
-//     if (a.rowCount == 0) res.redirect('/admin/login') 
-//     else
-//     {
-//         return pool.query("update Users set login = $2 where username = $1",[username,str2]);
-//     }
-//     req.session.context = username; res.redirect('/admin/home')});
+    //console.log("baba\n");
+    const username = req.body.username;
+    const name = req.body.name;
+    const email_id = req.body.email_id;
+    const password = req.body.password;
+    const repeat_pass = req.body.repeat_pass;
+    try {
+        const a = await pool.query("select * from Users where username = $1 or email_id = $2", [username, email_id])
+        if (a.rowCount != 0) {
+            console.log("username or email_id taken")
+            console.log(a.rows)
+            res.redirect('/admin/signup')
+        }
+        else {
+            if (password != repeat_pass) {
+                console.log("repeat password not same")
+                res.redirect('/admin/signup')
+            } else {
+                const b = await pool.query("Insert into Users values ($1,$2,$3,$4,null,'1',null,null,'0');", [username, name, password, email_id])
+                req.session.name_ = username; res.redirect('/admin/home');
+            }
+        }
+    } catch (e) {
+        console.log(e);
+        res.status(400).redirect('/admin/signup')
+    }
     
 
 
-// };
+};
 
 /*
 
@@ -202,10 +209,10 @@ exports.get_home_page = (req,res,next) => {
     var list6;
 
     a.then(val => {if (val.rowCount == 0) {return res.redirect('/admin/login')} 
-    else {return pool.query("select * from Movies order by avgRating DESC LIMIT 10;");}})
-    .then(val1 => {list1 = val1.rows; return pool.query("select * from Movies l, (select m.MovieId, (select count(*) from Users where last_watched = m.MovieId) as count from Movies m) as foo where l.MovieId = foo.MovieId order by foo.count DESC LIMIT 10;")})
-    .then(val2 => {list2 = val2.rows; return pool.query("select * from Movie_Genre m_g, user_Genre u_g, Movies m where m.MovieId = m_g.MovieId and m_g.GenreId = u_g.GenreId and u_g.username = $1 order by m.avgRating desc LIMIT 10 ; ", [username])})
-    .then(val3 => {list3 = val3.rows; return pool.query("select * from Movies l, Users u, Friends f where (f.username1 = $1 and f.username2 = u.username and u.last_watched = l.MovieId) or (f.username2 = $1 and f.username1 = u.username and u.last_watched = l.MovieId) ;", [username])})
+    else {return pool.query("select movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies order by avgRating DESC LIMIT 10;");}})
+    .then(val1 => {list1 = val1.rows; return pool.query("select l.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies l, (select m.MovieId, (select count(*) from Users where last_watched = m.MovieId) as count from Movies m) as foo where l.MovieId = foo.MovieId order by foo.count DESC LIMIT 10;")})
+    .then(val2 => {list2 = val2.rows; return pool.query("select m.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movie_Genre m_g, user_Genre u_g, Movies m where m.MovieId = m_g.MovieId and m_g.GenreId = u_g.GenreId and u_g.username = $1 order by m.avgRating desc LIMIT 10 ; ", [username])})
+    .then(val3 => {list3 = val3.rows; return pool.query("select l.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies l, Users u, Friends f where (f.username1 = $1 and f.username2 = u.username and u.last_watched = l.MovieId) or (f.username2 = $1 and f.username1 = u.username and u.last_watched = l.MovieId) ;", [username])})
     .then(val4 => {list4 = val4.rows;
         
         res.render('admin/home', {
