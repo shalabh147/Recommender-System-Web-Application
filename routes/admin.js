@@ -9,6 +9,8 @@ const router = express.Router();
 router.get('/home',adminCon.get_home_page);
 router.post('/home',adminCon.post_home_page);
 
+router.get('/logout',adminCon.get_logout_page);
+
 router.get('/login',adminCon.get_login_page);
 router.post('/login',adminCon.post_login_page);
 
@@ -29,6 +31,9 @@ router.post('/ratings',adminCon.post_ratings_page);
 
 router.get('/preferences',adminCon.get_preferences_page);
 router.post('/preferences',adminCon.post_preferences_page);
+
+router.get('/admin',adminCon.get_admin_page);
+router.post('/admin',adminCon.post_admin_page);
 
 /*router.get('/prods',adminCon.get_prods_test);
 router.post('/prods',adminCon.post_prods_test);

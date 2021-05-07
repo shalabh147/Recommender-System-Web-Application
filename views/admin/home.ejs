@@ -11,11 +11,12 @@
     <form class="nav-bar" action="http://localhost:3000/admin/home" method="GET"><li class="menu__group"><button class="menu__link r-link text-underlined">Home</button></li></form>
     <form class="nav-bar" action="http://localhost:3000/admin/search" method="GET"><li class="menu__group"><button class="menu__link r-link text-underlined">Search</button></li></form>
     <form class="nav-bar" action="http://localhost:3000/admin/profile" method="GET"><li class="menu__group"><button class="menu__link r-link text-underlined">My profile</button></li></form>
-    <form class="nav-bar" action="http://localhost:3000/admin/login" method="POST"><li class="menu__group"><button class="menu__link r-link text-underlined">Admin</button></li></form>
-    <form class="nav-bar" action="http://localhost:3000/admin/login" method="POST"><li class="menu__group"><button class="menu__link r-link text-underlined">Logout</button></li></form>
+    <form class="nav-bar" action="http://localhost:3000/admin/admin" method="get"><li class="menu__group"><button class="menu__link r-link text-underlined">Admin</button></li></form>
+    <form class="nav-bar" action="http://localhost:3000/admin/logout" method="get"><li class="menu__group"><button class="menu__link r-link text-underlined">Logout</button></li></form>
   </ul>
 </nav>
 
+<% if (list1.length != 0) { %>
 <div class="scrollmenu">
   <h1><b>MOST POPULAR MOVIES</b></h1>
   <div class="container">
@@ -48,7 +49,9 @@
       <% } %>
   </div>
 </div>
+<% } %>
 
+<% if (list2.length != 0) { %>
 <div class="scrollmenu">
   <h1><b>MOST TRENDING MOVIES NOW</b></h1>
   <div class="container">
@@ -81,7 +84,9 @@
       <% } %>
   </div>
 </div>
+<% } %>
 
+<% if (list3.length != 0) { %>
 <div class="scrollmenu">
   <h1><b>BASED ON WHAT YOU LIKE</b></h1>
   <div class="container">
@@ -114,7 +119,9 @@
       <% } %>
   </div>
 </div>
+<% } %>
 
+<% if (list4.length != 0) { %>
 <div class="scrollmenu">
   <h1><b>CHECK OUT WHAT YOUR FRIENDS ARE WATCHING</b></h1>
   <div class="container">
@@ -147,12 +154,11 @@
       <% } %>
   </div>
 </div>
+<% } %>
 
-</body>
-</html>
-
+<% if (list5.length != 0) { %>
 <div class="scrollmenu">
-    <h1><b>BECAUSE YOU WATCHED <%=list0[0].title%></b></h1>
+    <h1><b>BECAUSE YOU WATCHED <% if (list0.length == 0) { %><% } else { %><%= list0[0].title %><% } %></b></h1>
     <div class="container">
        <% for(var i=0; i<list5.length; i++){ %> 
   
@@ -183,6 +189,7 @@
         <% } %>
     </div>
   </div>
-  
+  <% } %>
+
   </body>
   </html>

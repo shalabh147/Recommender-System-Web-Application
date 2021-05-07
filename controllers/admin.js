@@ -1,5 +1,6 @@
 //const Prod = require('../models/prod');
 const pool = require('../utils/database');
+// const popup = require('');
 
 /*
 exports.get_test = (req,res,next) => {
@@ -16,13 +17,20 @@ exports.get_test = (req,res,next) => {
 */
 exports.get_login_page = (req,res,next) => {
 
-
     res.render('admin/login', {
         pageTitle: 'Login',
         path: '/admin/login',
         editing: false
     });
 
+};
+exports.get_logout_page = async (req,res,next) => {
+
+    const username = req.session.name_;
+    const str1 = '0';
+    const b = await pool.query("update Users set login = $2 where username = $1",[username,str1]);
+    req.session.destroy()
+    res.redirect('/admin/login')
 
 };
 
@@ -37,7 +45,12 @@ exports.post_login_page = async (req,res,next) => {
         req.session.name_ = username;
         if (a.rowCount == 0){
             console.log("user not found: "+username);
-            res.redirect('/admin/login');
+            res.render('admin/error', {
+                pageTitle: 'Error',
+                path: '/admin/error',
+                editing: false,
+                error: "Invalid credentials"
+            });
         }
         else{
             const b = await pool.query("update Users set login = $2 where username = $1",[username,str2]);
@@ -201,11 +214,12 @@ exports.post_search_page = async (req,res,next) => {
 
 };
 
-exports.get_home_page = (req,res,next) => {
+exports.get_home_page = async (req,res,next) => {
 
     var username = req.session.name_;
+    // console.log("home"+username)
     const str1 = '1';
-    const a = pool.query("SELECT login from Users where username = $1 and login = $2;",[username,str1]);
+    const a = await pool.query("SELECT login from Users where username = $1 and login = $2;",[username,str1]);
     var list1;
     var list2;
     var list3;
@@ -213,33 +227,28 @@ exports.get_home_page = (req,res,next) => {
     var list5;
     var list0;
 
-    a.then(val => {if (val.rowCount == 0) {return res.redirect('/admin/login')}
-    else {return pool.query("select * from users, movies where username=$1 and last_watched=movieid;",[username])}})
-    .then(val0 => {list0 = val0.rows; return pool.query("select movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies order by avgRating DESC LIMIT 10;")})
-    .then(val1 => {list1 = val1.rows; return pool.query("select l.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies l, (select m.MovieId, (select count(*) from Users where last_watched = m.MovieId) as count from Movies m) as foo where l.MovieId = foo.MovieId order by foo.count DESC LIMIT 10;")})
-    .then(val2 => {list2 = val2.rows; return pool.query("select m.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movie_Genre m_g, user_Genre u_g, Movies m where m.MovieId = m_g.MovieId and m_g.GenreId = u_g.GenreId and u_g.username = $1 order by m.avgRating desc LIMIT 10 ; ", [username])})
-    .then(val3 => {list3 = val3.rows; return pool.query("select l.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies l, Users u, Friends f where (f.username1 = $1 and f.username2 = u.username and u.last_watched = l.MovieId) or (f.username2 = $1 and f.username1 = u.username and u.last_watched = l.MovieId) ;", [username])})
-    .then(val4 => {list4 = val4.rows; return pool.query("with g as (select GenreId from Movie_Genre, Users where MovieId = last_watched and username=$1) select m.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies m, Movie_Genre m_g, g where m.MovieId = m_g.MovieId and m_g.GenreId = g.GenreId order by m.AvgRating desc limit 10;", [username])})
-    .then(val5 => {list5 = val5.rows;
-        
-        res.render('admin/home', {
+    if (a.rowCount == 0) {return res.redirect('/admin/login')}
+    else {list0 = await pool.query("select * from users, movies where username=$1 and last_watched=movieid;",[username])
+    list1 = await pool.query("select movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies order by avgRating DESC LIMIT 10;")
+    list2 = await pool.query("select l.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies l, (select m.MovieId, (select count(*) from Users where last_watched = m.MovieId) as count from Movies m) as foo where l.MovieId = foo.MovieId order by foo.count DESC LIMIT 10;")
+    list3 = await pool.query("select m.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movie_Genre m_g, user_Genre u_g, Movies m where m.MovieId = m_g.MovieId and m_g.GenreId = u_g.GenreId and u_g.username = $1 order by m.avgRating desc LIMIT 10 ; ", [username])
+    list4 = await pool.query("select l.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies l, Users u, Friends f where (f.username1 = $1 and f.username2 = u.username and u.last_watched = l.MovieId) or (f.username2 = $1 and f.username1 = u.username and u.last_watched = l.MovieId) ;", [username])
+    list5 = await pool.query("with g as (select GenreId from Movie_Genre, Users where MovieId = last_watched and username=$1) select m.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies m, Movie_Genre m_g, g where m.MovieId = m_g.MovieId and m_g.GenreId = g.GenreId order by m.AvgRating desc limit 10;", [username])
+      
+    res.render('admin/home', {
             pageTitle: 'Home',
             path: '/admin/home',
             editing: false,
             user_name:username,
-            list1:list1,
-            list2:list2,
-            list3:list3,
-            list4:list4,
-            list5:list5,
-            list0:list0
+            list1:list1.rows,
+            list2:list2.rows,
+            list3:list3.rows,
+            list4:list4.rows,
+            list5:list5.rows,
+            list0:list0.rows
         })
     }
-    
-    );
-    
 
-    //a.then(value => {res.render('prods', {pageTitle: 'Products', path: '/prods', editing: false, articles:value.rows});});
 }
 
 exports.post_home_page = async (req,res,next) => {
@@ -481,16 +490,26 @@ exports.post_profile_page = async (req,res,next) => {
 
 };
 
+exports.get_admin_page = (req,res,next) => {
 
 
-exports.get_admin_page = async (req,res,next) => {
+    res.render('admin/admin', {
+        pageTitle: 'Admin',
+        path: '/admin/admin',
+        editing: false
+    });
+
+
+};
+
+exports.post_admin_page = async (req,res,next) => {
 
     const username = req.session.name_;
     const indicator = req.body.indicator;
     var str1 = '1';
     const a = await pool.query("SELECT * from USERS where Username = $1 and login = $2 and admin = $2;",[username, str1]);
     if(a.rowCount == 0){
-        res.redirect('/admin/home');
+        return res.redirect('/admin/home');
     }else{
         const title = req.body.title;
         const release_date = req.body.release_date;
@@ -524,34 +543,23 @@ exports.get_admin_page = async (req,res,next) => {
                 const movieid = await pool.query("select movieid from movies where title = $1 and releasedate = $2", [title, release_date]);
                 const actor2id = await pool.query("select id from actor where name = $1", [actor2]);
                 const directorid = await pool.query("select id from director where name = $1", [director]);
-                const genreid = await pool.query("select genreid from genre where name = $1", [genre]);
-                const h = await pool.query("INSERT into movie_actor values ( $2, $1)", [actor1id.rows[0], movieid.rows[0]]);
-                const i = await pool.query("INSERT into movie_actor values ( $2, $1)", [actor2id.rows[0], movieid.rows[0]]);
-                const j = await pool.query("INSERT into movie_director values ( $2, $1)", [directorid.rows[0], movieid.rows[0]]);
-                const k = await pool.query("INSERT into movie_genre values ( $2, $1)", [genreid.rows[0], movieid.rows[0]]);
+                const genreid = await pool.query("select genreid from genre where genrename = $1", [genre]);
+                const h = await pool.query("INSERT into movie_actor values ( $2, $1)", [actor1id.rows[0].id, movieid.rows[0].movieid]);
+                const i = await pool.query("INSERT into movie_actor values ( $2, $1)", [actor2id.rows[0].id, movieid.rows[0].movieid]);
+                const j = await pool.query("INSERT into movie_director values ( $2, $1)", [directorid.rows[0].id, movieid.rows[0].movieid]);
+                const k = await pool.query("INSERT into movie_genre values ( $2, $1)", [genreid.rows[0].genreid, movieid.rows[0].movieid]);
             }else{
-                res.redirect('/admin/admin');
+                return res.redirect('/admin/admin');
             }
         }else{    
             if(indicator == "add"){
-                res.redirect('/admin/admin');
+                return res.redirect('/admin/admin');
             }else{
                 const c = await pool.query("DELETE from movies where title = $1 and releasedate = $2", [title, release_date]);
             }
         }
     }
-    a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
-    else res.render('admin/admin', {
-        pageTitle: 'Admin',
-        path: '/admin/admin',
-        editing: false,
-        user_name:username
-    });
-    });
-    
-
-
-    //a.then(value => {res.render('prods', {pageTitle: 'Products', path: '/prods', editing: false, articles:value.rows});});
+    return res.redirect('/admin/admin');
 }
 
 

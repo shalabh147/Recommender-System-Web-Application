@@ -56,7 +56,7 @@ sql_Rating = 'drop table if exists Rating cascade;\
     Num_Rating float not NULL check (Num_Rating >= 0 and Num_Rating <= 5),\
     Verbal_Rating text,\
     primary key (MovieId, username),\
-    foreign key (MovieId) references Movies (MovieId),\
+    foreign key (MovieId) references Movies (MovieId) on delete cascade,\
     foreign key (username) references Users (username)\
     );'
 
@@ -65,8 +65,8 @@ sql_Movie_Genre = 'drop table if exists Movie_Genre cascade;\
     MovieId integer,\
     GenreId integer,\
     primary key (MovieId, GenreId),\
-    foreign key (MovieId) references Movies (MovieId),\
-    foreign key (GenreId) references Genre (GenreId)\
+    foreign key (MovieId) references Movies (MovieId) on delete cascade,\
+    foreign key (GenreId) references Genre (GenreId) on delete cascade\
     );'
 
 sql_User_Genre = 'drop table if exists user_Genre cascade;\
@@ -74,8 +74,8 @@ sql_User_Genre = 'drop table if exists user_Genre cascade;\
     username text,\
     GenreId integer,\
     primary key (username, GenreId),\
-    foreign key (username) references Users (username),\
-    foreign key (GenreId) references Genre (GenreId)\
+    foreign key (username) references Users (username) on delete cascade,\
+    foreign key (GenreId) references Genre (GenreId) on delete cascade\
     );'
 
 sql_Movie_Director = 'drop table if exists Movie_Director cascade;\
@@ -83,8 +83,8 @@ sql_Movie_Director = 'drop table if exists Movie_Director cascade;\
     MovieId integer,\
     DirectorId integer,\
     primary key (MovieId, DirectorId),\
-    foreign key (MovieId) references Movies (MovieId),\
-    foreign key (DirectorId) references Director (Id)\
+    foreign key (MovieId) references Movies (MovieId) on delete cascade,\
+    foreign key (DirectorId) references Director (Id) on delete cascade\
     );'
 
 sql_Movie_Actor = 'drop table if exists Movie_Actor cascade;\
@@ -92,8 +92,8 @@ sql_Movie_Actor = 'drop table if exists Movie_Actor cascade;\
     MovieId integer,\
     ActorId integer,\
     primary key (MovieId, ActorId),\
-    foreign key (MovieId) references Movies (MovieId),\
-    foreign key (ActorId) references Actor (Id)\
+    foreign key (MovieId) references Movies (MovieId) on delete cascade,\
+    foreign key (ActorId) references Actor (Id) on delete cascade\
     );'
 
 sql_Friends = 'drop table if exists Friends cascade;\
@@ -101,6 +101,6 @@ sql_Friends = 'drop table if exists Friends cascade;\
     username1 text,\
     username2 text,\
     primary key (username1, username2),\
-    foreign key (username1) references Users (username),\
-    foreign key (username2) references Users (username)\
+    foreign key (username1) references Users (username) on delete cascade,\
+    foreign key (username2) references Users (username) on delete cascade\
     );'
