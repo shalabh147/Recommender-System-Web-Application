@@ -57,62 +57,6 @@ exports.get_signup_page = (req,res,next) => {
         pageTitle: 'Login',
         path: '/admin/login',
         editing: false
-<<<<<<< HEAD
-=======
-    });
-
-
-};
-
-exports.post_signup_page = async (req,res,next) => {
-
-    //console.log("baba\n");
-    const username = req.body.username;
-    const name = req.body.name;
-    const email_id = req.body.email_id;
-    const password = req.body.password;
-    const repeat_pass = req.body.repeat_pass;
-    try {
-        const a = await pool.query("select * from Users where username = $1 or email_id = $2", [username, email_id])
-        if (a.rowCount != 0) {
-            console.log("username or email_id taken")
-            console.log(a.rows)
-            res.redirect('/admin/signup')
-        }
-        else {
-            if (password != repeat_pass) {
-                console.log("repeat password not same")
-                res.redirect('/admin/signup')
-            } else {
-                const b = await pool.query("Insert into Users values ($1,$2,$3,$4,null,'1',null,null,'0');", [username, name, password, email_id])
-                req.session.name_ = username; res.redirect('/admin/home');
-            }
-        }
-    } catch (e) {
-        console.log(e);
-        res.status(400).redirect('/admin/signup')
-    }
-    
-
-
-};
-
-/*
-
-exports.get_lang_pref = (req,res,next) => {
-
-    const username = req.body.username;
-    const a = pool.query("SELECT login from USERS where Username = $1 and login = 1;",[username]);
-    //const a = Prod.get_all();
-    a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
-    else return pool.query("SELECT distinct language from movies;")})
-    .then(value => {res.render('admin/lang_pref', {
-        pageTitle: 'Language Preferences',
-        path: '/admin/lang_pref',
-        editing: false,
-        language:value.rows
-    });
->>>>>>> 0ab4e5aadbeb2191afd994c632d0979b9a789d78
     });
 
 
