@@ -83,7 +83,7 @@ exports.post_signup_page = async (req,res,next) => {
                 res.redirect('/admin/signup')
             } else {
                 const b = await pool.query("Insert into Users values ($1,$2,$3,$4,null,'1',null,null,'0');", [username, name, password, email_id])
-                req.session.name_ = username; res.redirect('/admin/home');
+                req.session.name_ = username; res.redirect('/admin/preferences');
             }
         }
     } catch (e) {
@@ -99,7 +99,7 @@ exports.get_preferences_page = async (req,res,next) => {
     const a = await pool.query("SELECT login from USERS where Username = $1 and login = $2;", [username,str1]);
     if (a.rowCount == 0) res.redirect('/admin/preferences') 
     else {
-        const b = await pool.query("SELECT distinct lananguage from movies;");
+        const b = await pool.query("SELECT distinct language from movies;");
         const c = await pool.query("SELECT distinct genreid, genrename from movie_genre natural join genre;");
         var list1 = b.rows;
         var list2 = c.rows;
@@ -128,9 +128,13 @@ exports.post_preferences_page = async (req, res, next) => {
             res.redirect('/admin/login');
         }
         else{
-            const b = await pool.query("Update Users set language1 = $1, language2 = $2 where username = $3;" , [pref1,pref2,username]);
-            const c = await pool.query("Insert into User_Genre values ($1,$2); " , [username, genre_id1]);
-            const d = await pool.query("Insert into User_Genre values ($1,$2); " , [username, genre_id2]);
+            const b = await pool.query("Update Users set language_pref1 = $1, language_pref2 = $2 where username = $3;" , [pref1,pref2,username]);
+            if (genre_id1 != ''){
+                const c = await pool.query("Insert into User_Genre values ($1,$2); " , [username, genre_id1]);
+            }
+            if (genre_id2 != '' && genre_id2 != genre_id1){
+                const d = await pool.query("Insert into User_Genre values ($1,$2); " , [username, genre_id2]);
+            }
             res.redirect('/admin/home');
         }
     }
@@ -200,24 +204,23 @@ exports.post_search_page = async (req,res,next) => {
 exports.get_home_page = (req,res,next) => {
 
     var username = req.session.name_;
-    // console.log(username);
-    // const username = "user1";
     const str1 = '1';
     const a = pool.query("SELECT login from Users where username = $1 and login = $2;",[username,str1]);
-    //const a = Prod.get_all();
     var list1;
     var list2;
     var list3;
     var list4;
     var list5;
-    var list6;
+    var list0;
 
-    a.then(val => {if (val.rowCount == 0) {return res.redirect('/admin/login')} 
-    else {return pool.query("select movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies order by avgRating DESC LIMIT 10;");}})
+    a.then(val => {if (val.rowCount == 0) {return res.redirect('/admin/login')}
+    else {return pool.query("select * from users, movies where username=$1 and last_watched=movieid;",[username])}})
+    .then(val0 => {list0 = val0.rows; return pool.query("select movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies order by avgRating DESC LIMIT 10;")})
     .then(val1 => {list1 = val1.rows; return pool.query("select l.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies l, (select m.MovieId, (select count(*) from Users where last_watched = m.MovieId) as count from Movies m) as foo where l.MovieId = foo.MovieId order by foo.count DESC LIMIT 10;")})
     .then(val2 => {list2 = val2.rows; return pool.query("select m.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movie_Genre m_g, user_Genre u_g, Movies m where m.MovieId = m_g.MovieId and m_g.GenreId = u_g.GenreId and u_g.username = $1 order by m.avgRating desc LIMIT 10 ; ", [username])})
     .then(val3 => {list3 = val3.rows; return pool.query("select l.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies l, Users u, Friends f where (f.username1 = $1 and f.username2 = u.username and u.last_watched = l.MovieId) or (f.username2 = $1 and f.username1 = u.username and u.last_watched = l.MovieId) ;", [username])})
-    .then(val4 => {list4 = val4.rows;
+    .then(val4 => {list4 = val4.rows; return pool.query("with g as (select GenreId from Movie_Genre, Users where MovieId = last_watched and username=$1) select m.movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from Movies m, Movie_Genre m_g, g where m.MovieId = m_g.MovieId and m_g.GenreId = g.GenreId order by m.AvgRating desc limit 10;", [username])})
+    .then(val5 => {list5 = val5.rows;
         
         res.render('admin/home', {
             pageTitle: 'Home',
@@ -228,6 +231,8 @@ exports.get_home_page = (req,res,next) => {
             list2:list2,
             list3:list3,
             list4:list4,
+            list5:list5,
+            list0:list0
         })
     }
     
@@ -235,6 +240,17 @@ exports.get_home_page = (req,res,next) => {
     
 
     //a.then(value => {res.render('prods', {pageTitle: 'Products', path: '/prods', editing: false, articles:value.rows});});
+}
+
+exports.post_home_page = async (req,res,next) => {
+
+    const username = req.session.name_
+    const movie_id = req.body.movie_id
+    req.session.movie_id = movie_id
+    if (req.body.indic == "y"){
+        const d = await pool.query("update Users set last_watched = $2 where username = $1;", [username,movie_id])
+    }
+    return res.redirect('/admin/movies')
 }
 
 
@@ -270,8 +286,8 @@ exports.get_ratings_page = async (req,res,next) => {
 exports.post_ratings_page = async (req,res,next) => {
 
     try{
-        const username = req.body.username;
-        const movie_id = req.body.movieid;
+        const username = req.session.name_;
+        const movie_id = req.body.movie_id;
         const num_rating = req.body.num_rating;
         const verbal_rating = req.body.verbal_rating;
         const str1 = '0';
@@ -285,12 +301,13 @@ exports.post_ratings_page = async (req,res,next) => {
             const b = await pool.query("select * from rating where username = $1 and movieid = $2",[username,movie_id]);
             if(b.rowCount == 0)
             {
-                const c = await pool.query("insert into rating values ($1, $2, $3, $4)" ,[username,movie_id,num_rating,verbal_rating]);
+                const c = await pool.query("insert into rating values ($1, $2, $3, $4)" ,[movie_id,username,num_rating,verbal_rating]);
             }
             else
             {
                 const d = await pool.query("update rating set num_rating = $3, verbal_rating = $4 where username = $1 and movieid = $2 ;",[username,movie_id,num_rating,verbal_rating])
             }
+            const e = await pool.query("update movies set avgrating = (select avg(num_rating) from rating where movieid=$1) where movieid=$1;",[movie_id])
             res.redirect('/admin/home');
         }
     }
@@ -305,16 +322,13 @@ exports.post_ratings_page = async (req,res,next) => {
 exports.get_movies_page = async (req,res,next) => {
 
     const username = req.session.name_;
-    const movie_id = req.body.movie_id;
-    // const movie_name = req.body.movie_name;
-    console.log("helo helo")
-    console.log(movie_id)
-    console.log(username)
+    const movie_id = req.session.movie_id;
+    
     const str1 = '1';
     const a = await pool.query("SELECT login from USERS where Username = $1 and login = $2;", [username,str1]);
     if (a.rowCount == 0) res.redirect('/admin/login') 
     else {
-        const b = await pool.query("SELECT * from MOVIES where movieid = $1", [movie_id]);
+        const b = await pool.query("SELECT movieid,language,title,to_char(releasedate,'DD MON YYYY') releasedate,duration,avgrating from MOVIES where movieid = $1", [movie_id]);
         const c = await pool.query("select * from actor, movie_actor where id=actorid and movieid=$1", [movie_id]);
         const d = await pool.query("select * from director, movie_director where id=directorid and movieid=$1", [movie_id]);
         const e = await pool.query("select * from movie_genre natural join genre where movieid=$1", [movie_id]);
@@ -350,8 +364,8 @@ exports.get_movies_page = async (req,res,next) => {
 exports.post_movies_page = async (req,res,next) => {
 
     try{
-        const username = req.session.name_;
-        const movie_id = req.body.movieId
+        const username = req.session.name_
+        const movie_id = req.body.movie_id
         const movie_name = req.body.title
         const str1 = '0';
         const str2 = '1';
@@ -372,7 +386,7 @@ exports.post_movies_page = async (req,res,next) => {
                 req.session.num_rating=0
                 req.session.verbal_rating=""
             }
-            res.redirect('/admin/rating');
+            res.redirect('/admin/ratings');
         }
     }
     catch (e){

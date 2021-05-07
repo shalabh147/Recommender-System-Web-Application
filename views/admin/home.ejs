@@ -17,16 +17,14 @@
 </nav>
 
 <div class="scrollmenu">
-  <h1><b>BECAUSE YOU WATCHED TOY STORY</b></h1>
+  <h1><b>MOST POPULAR MOVIES</b></h1>
   <div class="container">
      <% for(var i=0; i<list1.length; i++){ %> 
 
       <div class="movie-card">
           
-        <form action="/admin/movies" method="get">
           <div class="face face1">
               <div class="content">
-                  <!-- <img src="https://github.com/Jhonierpc/WebDevelopment/blob/master/CSS%20Card%20Hover%20Effects/img/design_128.png?raw=true"> -->
                   <h3><%= list1[i].title %></h3>
                   <h4><%= list1[i].releasedate %></h4>
                   <h4><%= list1[i].movieId %></h4>
@@ -34,46 +32,49 @@
           </div>
           <div class="face face2">
               <div class="content">
-                <!-- <form class="sign-in-htm" action="http://localhost:3000/admin/movies" method="GET">
-                    <button class="btn" type="submit">More info</button>
-                    <label for="movieid" class="label"></label>
-                    <input type="hidden" name="movieid" id="movieid" value=<%= list1[i].movieId %>>
-                    <label for="moviename" class="label"></label>
-                    <input type="hidden" name="moviename" id="moviename" value=<%= list1[i].title %>>
-                </form> -->
-                    <!-- <label for="email_id" class="label">Email id</label> -->
+                <form action="/admin/home" method="post">
                     <button class="btn" type="submit">More info</button>
                     <input type="hidden" name="movie_id" id="movie_id" value=<%=list1[i].movieid%>>
-                    <a href="#">Watch Now</a>
-                    <a href="#">Give Rating</a>
+                    <input type="hidden" name="indic" id="indic" value="n">
+                </form>
+                <form action="/admin/home" method="post">
+                    <button class="btn" type="submit">Watch now</button>
+                    <input type="hidden" name="indic" id="indic" value="y">
+                    <input type="hidden" name="movie_id" id="movie_id" value=<%=list1[i].movieid%>>
+                </form>
               </div>
           </div>
-        </form>
       </div>
       <% } %>
   </div>
 </div>
 
 <div class="scrollmenu">
-  <h1><b>BECAUSE YOU WATCHED TOY STORY</b></h1>
+  <h1><b>MOST TRENDING MOVIES NOW</b></h1>
   <div class="container">
      <% for(var i=0; i<list2.length; i++){ %> 
 
       <div class="movie-card">
+          
           <div class="face face1">
               <div class="content">
-                  <!-- <img src="https://github.com/Jhonierpc/WebDevelopment/blob/master/CSS%20Card%20Hover%20Effects/img/design_128.png?raw=true"> -->
                   <h3><%= list2[i].title %></h3>
                   <h4><%= list2[i].releasedate %></h4>
-                  <h4><%= list2[i].language %></h4>                  
+                  <h4><%= list2[i].movieId %></h4>
               </div>
           </div>
           <div class="face face2">
               <div class="content">
-                       <!-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cum cumque minus iste veritatis provident at.</p> -->
-                          <a href="#">More Info</a>
-                          <a href="#">Watch Now</a>
-                          <a href="#">Give Rating</a>
+                <form action="/admin/home" method="post">
+                    <button class="btn" type="submit">More info</button>
+                    <input type="hidden" name="movie_id" id="movie_id" value=<%=list2[i].movieid%>>
+                    <input type="hidden" name="indic" id="indic" value="n">
+                </form>
+                <form action="/admin/home" method="post">
+                    <button class="btn" type="submit">Watch now</button>
+                    <input type="hidden" name="indic" id="indic" value="y">
+                    <input type="hidden" name="movie_id" id="movie_id" value=<%=list2[i].movieid%>>
+                </form>
               </div>
           </div>
       </div>
@@ -82,25 +83,31 @@
 </div>
 
 <div class="scrollmenu">
-  <h1><b>BECAUSE YOU WATCHED TOY STORY</b></h1>
+  <h1><b>BASED ON WHAT YOU LIKE</b></h1>
   <div class="container">
      <% for(var i=0; i<list3.length; i++){ %> 
 
       <div class="movie-card">
+          
           <div class="face face1">
               <div class="content">
-                  <!-- <img src="https://github.com/Jhonierpc/WebDevelopment/blob/master/CSS%20Card%20Hover%20Effects/img/design_128.png?raw=true"> -->
                   <h3><%= list3[i].title %></h3>
                   <h4><%= list3[i].releasedate %></h4>
-                  <h4><%= list3[i].language %></h4>                  
+                  <h4><%= list3[i].movieId %></h4>
               </div>
           </div>
           <div class="face face2">
               <div class="content">
-                       <!-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cum cumque minus iste veritatis provident at.</p> -->
-                          <a href="#">More Info</a>
-                          <a href="#">Watch Now</a>
-                          <a href="#">Give Rating</a>
+                <form action="/admin/home" method="post">
+                    <button class="btn" type="submit">More info</button>
+                    <input type="hidden" name="movie_id" id="movie_id" value=<%=list3[i].movieid%>>
+                    <input type="hidden" name="indic" id="indic" value="n">
+                </form>
+                <form action="/admin/home" method="post">
+                    <button class="btn" type="submit">Watch now</button>
+                    <input type="hidden" name="indic" id="indic" value="y">
+                    <input type="hidden" name="movie_id" id="movie_id" value=<%=list3[i].movieid%>>
+                </form>
               </div>
           </div>
       </div>
@@ -108,32 +115,74 @@
   </div>
 </div>
 
-
 <div class="scrollmenu">
-  <h1><b>BECAUSE YOU WATCHED TOY STORY</b></h1>
+  <h1><b>CHECK OUT WHAT YOUR FRIENDS ARE WATCHING</b></h1>
   <div class="container">
      <% for(var i=0; i<list4.length; i++){ %> 
 
       <div class="movie-card">
+          
           <div class="face face1">
               <div class="content">
-                  <!-- <img src="https://github.com/Jhonierpc/WebDevelopment/blob/master/CSS%20Card%20Hover%20Effects/img/design_128.png?raw=true"> -->
                   <h3><%= list4[i].title %></h3>
                   <h4><%= list4[i].releasedate %></h4>
-                  <h4><%= list4[i].language %></h4>                  
+                  <h4><%= list4[i].movieId %></h4>
               </div>
           </div>
           <div class="face face2">
               <div class="content">
-                       <!-- <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cum cumque minus iste veritatis provident at.</p> -->
-                          <a href="#">More Info</a>
-                          <a href="#">Watch Now</a>
-                          <a href="#">Give Rating</a>
+                <form action="/admin/home" method="post">
+                    <button class="btn" type="submit">More info</button>
+                    <input type="hidden" name="movie_id" id="movie_id" value=<%=list4[i].movieid%>>
+                    <input type="hidden" name="indic" id="indic" value="n">
+                </form>
+                <form action="/admin/home" method="post">
+                    <button class="btn" type="submit">Watch now</button>
+                    <input type="hidden" name="indic" id="indic" value="y">
+                    <input type="hidden" name="movie_id" id="movie_id" value=<%=list4[i].movieid%>>
+                </form>
               </div>
           </div>
       </div>
       <% } %>
   </div>
 </div>
+
 </body>
 </html>
+
+<div class="scrollmenu">
+    <h1><b>BECAUSE YOU WATCHED <%=list0[0].title%></b></h1>
+    <div class="container">
+       <% for(var i=0; i<list5.length; i++){ %> 
+  
+        <div class="movie-card">
+            
+            <div class="face face1">
+                <div class="content">
+                    <h3><%= list5[i].title %></h3>
+                    <h4><%= list5[i].releasedate %></h4>
+                    <h4><%= list5[i].movieId %></h4>
+                </div>
+            </div>
+            <div class="face face2">
+                <div class="content">
+                  <form action="/admin/home" method="post">
+                      <button class="btn" type="submit">More info</button>
+                      <input type="hidden" name="movie_id" id="movie_id" value=<%=list5[i].movieid%>>
+                      <input type="hidden" name="indic" id="indic" value="n">
+                  </form>
+                  <form action="/admin/home" method="post">
+                      <button class="btn" type="submit">Watch now</button>
+                      <input type="hidden" name="indic" id="indic" value="y">
+                      <input type="hidden" name="movie_id" id="movie_id" value=<%=list5[i].movieid%>>
+                  </form>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+  </div>
+  
+  </body>
+  </html>

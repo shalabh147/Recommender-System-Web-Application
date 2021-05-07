@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" href="home.css">
+  <link rel="stylesheet" href="/css/home.css">
 </head>
 <body>
 <div class = "parallax">
@@ -21,17 +21,17 @@
       <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab"><%= list1[0].title %></label>
       <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab"></label>
       <div class="login-form">
-        <form class="sign-in-htm" action="http://localhost:3000/admin/home" method="POST">
         <div class="sign-in-htm">
         <h2>Duration: <%= list1[0].duration %> min</h2>
-        <h2>Release Date: <%= list1[0].releaseDate %> min</h2>
-        <h2>Average Rating: <%= list1[0].avgRating %> min</h2>
+        <h2>Release Date: <%= list1[0].releasedate %> </h2>
+        <h2>Average Rating: <%= list1[0].avgrating %> </h2>
         <h2>Actors : <%for(var i=0; i<list2.length; i++){%> <%= list2[i].name %> <%} %></h2>
         <h2>Director : <%for(var i=0; i<list3.length; i++){%> <%= list3[i].name %> <%} %></h2>
         <h2>Genre : <%for(var i=0; i<list4.length; i++){%> <%= list4[i].name %> <%} %></h2>
         </div>
-        <input type="hidden" value="<%= list1[0].movieId %>" name="movieId">
-        <input type="hidden" value="<%= list1[0].title %>" name="title">
+        <form class="sign-in-htm" action="http://localhost:3000/admin/movies" method="post">
+        <input type="hidden" value="<%= list1[0].movieid %>" name="movie_id" id="movie_id">
+        <input type="hidden" value="<%= list1[0].title %>" name="title" id="title">
         <button class="btn" type="submit">Give Rating</button>
         </form>
       </div>

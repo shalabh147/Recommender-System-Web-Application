@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 <div class="parallax">
@@ -14,37 +14,37 @@
           <div class="sign-in-htm">
           <div class="group">
             <label for="user" class="label">Language Preference-1</label>
-            <input list="languages" id="langpref_1" class="input" >
+            <input list="languages" name="langpref_1"  id="langpref_1" class="input" >
             <datalist id="languages"> 
-              <% for(int i =0; i<list1.length; i++) {%>
+              <% for(var i =0; i<list1.length; i++) {%>
                 <option value=<%= list1[i].language %> />
               <% } %>
             </datalist>
           </div>
           <div class="group">
             <label for="user" class="label">Language Preference-2</label>
-            <input list="languages" id="langpref_2" class="input" >
+            <input list="languages" name="langpref_2"  id="langpref_2" class="input" >
             <datalist id="languages"> 
-              <% for(int i =0; i<list1.length; i++) {%>
+              <% for(var i =0; i<list1.length; i++) {%>
                 <option value=<%= list1[i].language %> />
               <% } %>
             </datalist>
           </div>
           <div class="group">
             <label for="user" class="label">Genre Preference-1</label>
-            <input list="genres" id="genrepref_1" class="input" >
+            <input list="genres" name="genrepref_1" id="genrepref_1" class="input" >
             <datalist id="genres"> 
-              <% for(int i =0; i<list2.length; i++) {%>
-                <option value=<%= list2[i].genrename %> />
+              <% for(var i =0; i<list2.length; i++) {%>
+                <option value=<%= list2[i].genreid %> ><%= list2[i].genrename %></option>
               <% } %>
             </datalist>
           </div>
           <div class="group">
             <label for="user" class="label">Genre Preference-2</label>
-            <input list="genres" id="genrepref_2" class="input" >
+            <input list="genres" name="genrepref_2" id="genrepref_2" class="input" >
             <datalist id="genres"> 
-              <% for(int i =0; i<list2.length; i++) {%>
-                <option value=<%= list2[i].genrename %> />
+              <% for(var i =0; i<list2.length; i++) {%>
+                <option value=<%= list2[i].genreid %> ><%= list2[i].genrename %></option>
               <% } %>
             </datalist>
           </div>
