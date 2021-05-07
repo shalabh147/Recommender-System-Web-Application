@@ -18,6 +18,9 @@ router.post('/search',adminCon.post_search_page);
 router.get('/profile',adminCon.get_profile_page);
 router.post('/profile',adminCon.post_profile_page);
 
+router.get('/movies',adminCon.get_movies_page);
+router.post('/movies',adminCon.post_movies_page);
+
 /*router.get('/prods',adminCon.get_prods_test);
 router.post('/prods',adminCon.post_prods_test);
 

@@ -242,33 +242,88 @@ exports.get_ratings_page = (req,res,next) => {
 
     //a.then(value => {res.render('prods', {pageTitle: 'Products', path: '/prods', editing: false, articles:value.rows});});
 }
-
-
-exports.get_movies_page = (req,res,next) => {
-
-    const username = req.body.username;
-    const movie_id = req.body.movieid;
-    const movie_name = req.body.moviename;
-
-    const a = pool.query("SELECT login from USERS where Username = $1 and login = 1;",[username]);
-    const b = pool.query("SELECT * from MOVIES where movieid = $1",[movie_id]);
-    //const a = Prod.get_all();
-    a.then(val => {if (val.rowCount == 0) res.redirect('/admin/login') 
-    else return pool.query("SELECT * from MOVIES where movieid = $1",[movie_id]);
-    })
-    .then(value => {res.render('admin/movies', {
-        pageTitle: 'Movie Info',
-        path: '/admin/movies',
-        editing: false,
-        user_name:username,
-        movie:value.rows
-    });});
-
-    
-
-    //a.then(value => {res.render('prods', {pageTitle: 'Products', path: '/prods', editing: false, articles:value.rows});});
-}
 */
+
+exports.get_movies_page = async (req,res,next) => {
+
+    const username = req.session.name_;
+    const movie_id = req.body.movie_id;
+    // const movie_name = req.body.movie_name;
+    console.log("helo helo")
+    console.log(movie_id)
+    console.log(username)
+    const str1 = '1';
+    const a = await pool.query("SELECT login from USERS where Username = $1 and login = $2;", [username,str1]);
+    if (a.rowCount == 0) res.redirect('/admin/login') 
+    else {
+        const b = await pool.query("SELECT * from MOVIES where movieid = $1", [movie_id]);
+        const c = await pool.query("select * from actor, movie_actor where id=actorid and movieid=$1", [movie_id]);
+        const d = await pool.query("select * from director, movie_director where id=directorid and movieid=$1", [movie_id]);
+        const e = await pool.query("select * from movie_genre natural join genre where movieid=$1", [movie_id]);
+        var list1;
+        var list2;
+        var list3;
+        var list4;
+        try {
+            list1 = b.rows;
+            list2 = c.rows;
+            list3 = d.rows;
+            list4 = e.rows;
+        } catch (error) {
+            console.log("something went wrong on movieid: "+movie_id)
+            console.log(e)
+            res.status(400).redirect('/admin/home')
+        }
+        
+        res.render('admin/movies', {
+            pageTitle: 'Movie Info',
+            path: '/admin/movies',
+            editing: false,
+            user_name:username,
+            list1:list1,
+            list2:list2,
+            list3:list3,
+            list4:list4
+        })
+    }
+
+}
+
+exports.post_movies_page = async (req,res,next) => {
+
+    try{
+        const username = req.session.name_;
+        const movie_id = req.body.movieId
+        const movie_name = req.body.title
+        const str1 = '0';
+        const str2 = '1';
+        const a = await pool.query("SELECT login from Users where username = $1 and login = $2;", [username,str2]);
+        if (a.rowCount == 0){
+            console.log(username+" not logged in");
+            res.redirect('/admin/login');
+        }
+        else{
+            const b = await pool.query("select * from rating where username=$1 and movieid=$2", [username, movie_id]);
+            req.session.movie_id=movie_id
+            req.session.movie_name=movie_name
+            if(b.rowCount != 0){
+                req.session.num_rating=b.rows[0].num_rating
+                req.session.verbal_rating=b.rows[0].verbal_rating
+            }
+            else{
+                req.session.num_rating=0
+                req.session.verbal_rating=""
+            }
+            res.redirect('/admin/rating');
+        }
+    }
+    catch (e){
+        console.log(e);
+        res.status(400).redirect('/admin/login')
+    }
+
+};
+
 exports.get_profile_page = async (req,res,next) => {
 
     var username = req.session.name_;
@@ -296,7 +351,7 @@ exports.get_profile_page = async (req,res,next) => {
             genre2 = b.rows[1];
         } catch(e){}
         try{
-            const c = await pool.query("select * from Movies l, Users u, Friends f where (f.Username1 = $1 and f.Username2 = u.Username and u.last_watched = l.MovieId) or (f.Username2 = $1 and f.Username1 = u.Username and u.last_watched = l.MovieId) ; " , [username]);
+            const c = await pool.query("select *, case when last_watched is null then NULL else (select title from Movies where movieid=last_watched) end as mov_title from Users u, Friends f where (f.Username1 = $1 and f.Username2 = u.Username) or (f.Username2 = $1 and f.Username1 = u.Username) order by login desc, mov_title; " , [username]);
             list1 = c.rows
         }
         catch(e){
@@ -342,9 +397,9 @@ exports.post_profile_page = async (req,res,next) => {
             res.redirect('/admin/login');
         }
         else{
-            const d = await pool.query("select * from users where lower(username) like '%' || $1 || '%' " , [keyword]);
+            const d = await pool.query("select * from users where lower(username) like '%' || $1 || '%' order by username" , [keyword]);
             req.session.search_friend = d;
-            res.redirect('/admin/search');
+            res.redirect('/admin/profile');
         }
     }
     catch (e){
